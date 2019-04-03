@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="tm_mypage">
+
+	<!-- 마이페이지 비밀번호 변경 로그인 -->
+	<select id="select_member_login" parameterType="map" resultType="int">
+		SELECT
+				count(mem_id)
+		FROM
+				tm_member
+		WHERE
+				mem_id = #{id} AND mem_pw = #{pw}
+	</select>
+	
+	<!-- 마이페이지 비밀번호 변경 -->
+	<update id="update_member_pw" parameterType="map">
+		UPDATE
+				tm_member
+		SET
+				mem_pw = #{pw}
+		WHERE
+				mem_id = #{id}
+	</update>
+
+	<!-- 마이페이지 회원정보 변경 회원정보 불러오기 -->
+	<select id="select_mypage_member" parameterType="map" resultType="map">
+		SELECT
+				mem_id, mem_name, mem_tel, mem_email
+		FROM
+				tm_member
+		WHERE
+				mem_id = #{id}
+	</select>
+	
+	<!-- 마이페이지 회원정보 변경 -->
+	<update id="update_mypage_member" parameterType="map">
+		UPDATE
+				tm_member
+		SET
+				mem_name = #{name}, mem_tel = #{tel}, mem_email = #{email}
+		WHERE
+				mem_id = #{id}
+	</update>
+	
+	<!-- 마이페이지 회원탈퇴 -->
+	<update id="delete_member" parameterType="map">
+		UPDATE
+				tm_member
+		SET
+				mem_pw = null, enabled = 0, del_date = now(), del_chk = 0
+		WHERE
+				mem_id = #{id}
+	</update>
+	
+</mapper>

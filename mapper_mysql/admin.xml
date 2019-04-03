@@ -1,0 +1,787 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="tm_admin">
+	<!--
+	현재 년도에 맞게 선수 나이 수정 
+	UPDATE tm_player a, (SELECT a1.player_no, (a1.year-a1.player_birth) player_age
+					  FROM(SELECT player_no, player_name, EXTRACT(YEAR FROM NOW()) year, SUBSTRING(player_birth,1,4) player_birth FROM tm_player) a1) a2
+	SET a.player_age = a2.player_age
+	WHERE a.player_no = a2.player_no
+	 -->
+	 
+	<!-- 관리자페이지 최근 가입회원 리스트 -->
+	<select id="select_main_new_member1" resultType="map">
+		SELECT
+				mem_id, mem_name, DATE_FORMAT(mem_date, '%Y-%m-%d %H:%i:%s') mem_date,
+				CASE authority
+				WHEN 'ROLE_USER' THEN '일반'
+				END authority 
+		FROM
+				tm_member
+		WHERE
+				mem_date >= DATE_ADD(NOW(), INTERVAL -7 DAY) AND jointype = 1 AND enabled = 1 AND del_chk = 1
+		ORDER BY
+				mem_date DESC
+	</select>
+	
+	<!-- 관리자페이지 최근 가입회원 갯수 -->
+	<select id="select_main_new_member1_count" resultType="map">
+		SELECT
+				count(mem_id) count
+		FROM
+				tm_member
+		WHERE
+				mem_date >= DATE_ADD(NOW(), INTERVAL -7 DAY) AND jointype = 1 AND enabled = 1 AND del_chk = 1
+	</select>
+	
+	<!-- 관리자페이지 신규가입(클럽/감독) 리스트 -->
+	<select id="select_main_new_member2" resultType="map">
+		SELECT
+				mem_id,
+				CASE authority 
+				WHEN 'ROLE_COACH' THEN '감독'
+			    WHEN 'ROLE_CLUB' THEN '클럽'
+				END authority, DATE_FORMAT(mem_date, '%Y-%m-%d %H:%i:%s') mem_date
+		FROM
+				tm_member
+		WHERE
+				jointype IN (2,3) AND enabled = 3  AND del_chk = 1 
+		ORDER BY
+				mem_date DESC
+	</select>
+	
+	<!-- 관리자페이지 신규가입(클럽/감독) 갯수 -->
+	<select id="select_main_new_member2_count" resultType="map">
+		SELECT
+				count(mem_id) count
+		FROM
+				tm_member
+		WHERE
+				jointype IN (2,3) AND enabled = 3  AND del_chk = 1
+	</select>
+	
+	<!-- 관리자페이지 최근 회원탈퇴 리스트 -->
+	<select id="select_main_del_member" resultType="map">
+		SELECT
+				mem_id, del_date, 
+				CASE authority 
+				WHEN 'ROLE_COACH' THEN '감독'
+			    WHEN 'ROLE_CLUB' THEN '클럽'
+			    WHEN 'ROLE_USER' THEN '일반'
+				END authority
+		FROM
+				tm_member
+		WHERE
+				mem_date >= DATE_ADD(NOW(), INTERVAL -1 MONTH) AND del_chk = 0
+		ORDER BY
+				del_date DESC
+	</select>
+	
+	<!-- 관리자페이지 최근 회원탈퇴 갯수 -->
+	<select id="select_main_del_member_count" resultType="map">
+		SELECT
+				count(mem_id) count
+		FROM
+				tm_member
+		WHERE
+				mem_date >= DATE_ADD(NOW(), INTERVAL -1 MONTH) AND del_chk = 0
+	</select>
+
+	<!-- 관리자페이지 선수등록 Position1 List -->
+	<select id="select_player_position" resultType="map">
+		SELECT
+				position1_name
+		FROM
+				tm_position
+		GROUP BY
+				position1_name
+		ORDER BY
+				position_no
+	</select>
+	
+	<!-- 관리자페이지 선수등록 Position2 List -->
+	<select id="select_player_position2" parameterType="map" resultType="map">
+		SELECT
+				position2_name
+		FROM
+				tm_position
+		WHERE
+				position1_name = #{position1}
+	</select>
+	
+	<!-- 관리자페이지 선수등록 Country List -->
+	<select id="select_player_country" resultType="map">
+		SELECT
+				continent_no, country_no, country_name
+		FROM
+				tm_country
+		ORDER BY
+				country_name ASC
+	</select>
+	
+	<!-- 관리자페이지 선수등록 Club List -->
+	<select id="select_player_clublist" parameterType="map" resultType="map">
+		SELECT
+				c.club_no, c.club_name
+		FROM
+				tm_club c
+		INNER JOIN (
+						SELECT
+								a.country_no, b.league_no, a.country_name, b.league_name
+						FROM
+								tm_country a
+				   		INNER JOIN
+				   				tm_league b
+				   		ON
+				   				a.country_no = b.country_no
+		           		WHERE
+		           				b.league_no = #{country}) aa
+		ON
+				c.league_no = aa.league_no
+	</select>
+	
+	<!-- 관리자페이지 감독등록 Formation List -->
+	<select id="select_formationlist" parameterType="map" resultType="map">
+		SELECT
+				formation_name
+		FROM
+				tm_formation
+	</select>
+
+<!-- 컨텐츠 등록 -->
+
+	<!-- 관리자페이지 대륙등록 -->
+	<insert id="insert_continent" parameterType="map" useGeneratedKeys="false">
+		INSERT
+		INTO
+				tm_continent(continent_name, continent_filedata)
+		VALUES
+				(#{name}, #{filedata, jdbcType=BLOB})
+	</insert>
+	
+	<!-- 관리자페이지 국가등록 -->
+	<insert id="insert_country" parameterType="map" useGeneratedKeys="false">
+		INSERT
+		INTO
+				tm_country(continent_no, country_name, country_filedata)
+		VALUES
+				<foreach open="" close="" separator="," collection="name" item="name" index="idx">
+				(#{continent[${idx}]}, #{name}, #{filedata[${idx}], jdbcType=BLOB})
+				</foreach>
+	</insert>
+	
+	<!-- 관리자페이지 리그등록 -->
+	<insert id="insert_league" parameterType="map" useGeneratedKeys="false">
+		INSERT
+		INTO
+				tm_league(country_no, league_name, league_filedata)
+		VALUES
+				<foreach open="" close="" separator="," collection="name" item="name" index="idx">
+				(#{country[${idx}]}, #{name}, #{filedata[${idx}], jdbcType=BLOB})
+				</foreach>
+	</insert>
+	
+	<!-- 관리자페이지 클럽등록 -->
+	<insert id="insert_club" parameterType="map" useGeneratedKeys="false">
+		INSERT
+		INTO
+				tm_club(league_no, club_name, club_addr, club_tel, club_fax, club_page, club_stadium, club_founded, club_filedata)
+		VALUES
+				<foreach open="" close="" separator="," collection="no" item="no" index="idx">
+				(#{no}, #{name[${idx}]}, #{addr[${idx}]}, #{tel[${idx}]}, #{fax[${idx}]},#{page[${idx}]}, #{stadium[${idx}]}, #{founded[${idx}]}, #{filedata[${idx}], jdbcType=BLOB})
+				</foreach>
+	</insert>
+	
+	<!-- 관리자페이지 선수등록 -->
+	<insert id="insert_player" parameterType="map" useGeneratedKeys="false">
+		INSERT INTO
+				tm_player(country_no, club_no, player_name, player_backnum, player_birth, player_mv, player_age, player_height, player_position1, player_position2, player_foot, player_filedata)
+		VALUES
+			<foreach open="" close="" separator="," collection="country" item="country" index="idx">
+				(#{country}, #{club[${idx}]}, #{name[${idx}]}, #{backnum[${idx}]}, #{birth[${idx}]}, #{mv[${idx}]}, #{age[${idx}]}, #{height[${idx}]}, #{position1[${idx}]}, #{position2[${idx}]}, #{foot[${idx}]}, #{filedata[${idx}], jdbcType=BLOB})
+			</foreach>
+	</insert>
+	<!-- 
+	<insert id="insert_player" parameterType="map" useGeneratedKeys="false">
+		INSERT INTO
+				tm_player(country_no, club_no, agent_no, player_name, player_birth, player_mv, player_age, player_height player_position1, player_position2, player_foot)
+		VALUES
+		<foreach open="" close="" separator="," collection="name" item="name" index="idx">
+			(#{no}, #{club[${idx}]}, #{agent[${idx}]}, #{name}, #{birth[${idx}]}, #{mv[${idx}]}, #{age[${idx}]}, #{height[${idx}]}, #{position1[${idx}]}, #{position2[${idx}]}, #{foot[${idx}]})
+			<selectKey keyProperty="country_no" order="BEFORE" resultType="int">
+				SELECT country_no FROM tm_country WHERE country_name = #{country[${idx}]}
+			</selectKey>
+		</foreach>
+	</insert>
+	 -->
+	 
+	 <!-- 관리자페이지 감독등록 -->
+	 <insert id="insert_coach" parameterType="map" useGeneratedKeys="false">
+	 	 INSERT INTO
+	 	 		tm_coach(country_no, coach_name, coach_birth, coach_age, coach_formation, coach_filedata)
+	 	 VALUES
+	 	 	<foreach open="" close="" separator="," collection="country" item="country" index="idx">
+	 	 	(#{country}, #{name[${idx}]}, #{birth[${idx}]}, #{age[${idx}]}, #{formation[${idx}]}, #{filedata[${idx}], jdbcType=BLOB})
+	 	 	</foreach>
+	 </insert>
+	 
+<!-- 검색 카테고리 -->
+
+	<!-- 관리자페이지 검색 카테고리 대륙리스트 -->
+	<select id="select_continent_category_list" resultType="map">
+		SELECT
+				continent_no, continent_name
+		FROM
+				tm_continent
+	</select>
+	
+	<!-- 관리자페이지 검색 카테고리 국가리스트 -->
+	<select id="select_country_category_list" resultType="map">
+		SELECT
+				country_no, country_name
+		FROM
+				tm_country a
+		INNER JOIN
+				tm_continent b
+		ON
+				a.continent_no = b.continent_no
+		WHERE
+				a.continent_no = #{no}
+	</select>
+	
+	<!-- 관리자페이지 검색 카테고리 리그리스트 -->
+	<select id="select_league_category_list" resultType="map">
+		SELECT
+				league_no, league_name
+		FROM
+				tm_league a
+		INNER JOIN
+				tm_country b
+		ON
+				a.country_no = b.country_no
+		WHERE
+				a.country_no = #{no}
+	</select>
+	
+	<!-- 관리자페이지 검색 카테고리 클럽리스트 -->
+	<select id="select_club_category_list" resultType="map">
+		SELECT
+				club_no, club_name
+		FROM
+				tm_club a
+		INNER JOIN
+				tm_league b
+		ON
+				a.league_no = b.league_no
+		WHERE
+				a.league_no = #{no}
+	</select>
+	
+
+<!-- 메인리스트 -->
+
+	<!-- 관리자페이지 회원관리 전체리스트 -->
+	<select id="select_all_memberlist" resultType="map">
+		SELECT
+				mem_id, mem_name, mem_tel, mem_email, DATE_FORMAT(mem_date, '%Y-%m-%d %H:%i:%s') mem_date, 
+				DATE_FORMAT(block_date, '%Y-%m-%d %H:%i:%s') block_date, jointype, enabled, 
+				CASE authority 
+				WHEN 'ROLE_COACH' THEN '감독'
+			    WHEN 'ROLE_CLUB' THEN '클럽'
+			    WHEN 'ROLE_USER' THEN '일반'
+				END authority
+		FROM
+				tm_member
+		WHERE
+				enabled <![CDATA[<]]> 3 AND del_chk = 1
+		ORDER BY
+				mem_date DESC
+	</select>
+	
+	<!-- 관리자페이지 회원관리 일반리스트 -->
+	<select id="select_general_memberlist" resultType="map">
+		SELECT
+				mem_id, mem_name, mem_tel, mem_email, DATE_FORMAT(mem_date, '%Y-%m-%d %H:%i:%s') mem_date, jointype, enabled, 
+				CASE authority 
+				WHEN 'ROLE_COACH' THEN '감독'
+			    WHEN 'ROLE_CLUB' THEN '클럽'
+			    WHEN 'ROLE_USER' THEN '일반'
+				END authority
+		FROM
+				tm_member
+		WHERE
+				enabled = 1 AND del_chk = 1
+		ORDER BY
+				mem_date DESC
+	</select>
+	
+	<!-- 관리자페이지 회원관리 차단리스트 -->
+	<select id="select_block_memberlist" resultType="map">
+		SELECT
+				mem_id, mem_name, mem_tel, mem_email, DATE_FORMAT(mem_date, '%Y-%m-%d %H:%i:%s') mem_date, 
+				DATE_FORMAT(block_date, '%Y-%m-%d %H:%i:%s') block_date, jointype, enabled, 
+				CASE authority 
+				WHEN 'ROLE_COACH' THEN '감독'
+			    WHEN 'ROLE_CLUB' THEN '클럽'
+			    WHEN 'ROLE_USER' THEN '일반'
+				END authority
+		FROM
+				tm_member
+		WHERE
+				enabled = 0 AND del_chk = 1
+		ORDER BY
+				mem_date DESC
+	</select>
+	
+	<!-- 관리자페이지 회원관리 가입신청리스트 -->
+	<select id="select_wait_memberlist" resultType="map">
+		SELECT
+				mem_id, mem_name, mem_tel, mem_email, DATE_FORMAT(mem_date, '%Y-%m-%d %H:%i:%s') mem_date, 
+				DATE_FORMAT(block_date, '%Y-%m-%d %H:%i:%s') block_date, jointype, enabled, 
+				CASE authority 
+				WHEN 'ROLE_COACH' THEN '감독'
+			    WHEN 'ROLE_CLUB' THEN '클럽'
+			    WHEN 'ROLE_USER' THEN '일반'
+				END authority
+		FROM
+				tm_member
+		WHERE
+				jointype IN (2,3) AND enabled = 3 AND del_chk = 1
+		ORDER BY
+				mem_date DESC
+	</select>
+	
+	<!-- 관리자페이지 회원관리 회원검색 -->
+	<select id="select_search_member" parameterType="map" resultType="map">
+		SELECT
+				mem_id, mem_name, mem_tel, mem_email, DATE_FORMAT(mem_date, '%Y-%m-%d %H:%i:%s') mem_date, 
+				DATE_FORMAT(block_date, '%Y-%m-%d %H:%i:%s') block_date, jointype, enabled, CAST(@rownum:=@rownum+1 AS INT) rank,
+				CASE authority 
+				WHEN 'ROLE_COACH' THEN '감독'
+			    WHEN 'ROLE_CLUB' THEN '클럽'
+			    WHEN 'ROLE_USER' THEN '일반'
+				END authority
+		FROM
+				tm_member a, (SELECT @rownum:=0) b
+		WHERE
+				mem_id LIKE '%${text}%' AND del_chk = 1
+		<choose>
+			<when test="detail == 2">AND enabled = 1</when>
+			<when test="detail == 3">AND enabled = 0</when>
+		</choose>
+		ORDER BY
+				mem_date DESC
+	</select>
+	
+	<!-- 관리자페이지 경기일정관리 (챔피언스리그 / 그룹목록) -->
+	<select id="select_rest_champs_grouplist" parameterType="map" resultType="map">
+		SELECT
+				champs_group
+		FROM
+				tm_champs
+		GROUP BY
+				champs_group
+	</select>
+	
+	<!-- 관리자페이지 경기일정관리 (챔피언스리그 / 전체그룹 클럽목록) -->
+	<select id="select_champs_all_clublist" resultType="map">
+		SELECT
+				a2.club_no, a2.champs_group, CAST(a2.rank AS INT) rank, b.club_name
+		FROM 
+				(SELECT
+						a.club_no, a.champs_group,
+						(CASE
+								@group_code
+				 		 WHEN a.champs_group THEN @rownum:=@rownum+1
+						 ELSE @rownum:=1
+						 END) rank,
+						(@group_code:=a.champs_group) group_code
+				 FROM
+						tm_champs a, (SELECT @group_code:='', @rownum:=0 FROM DUAL) a1
+				 ORDER BY
+						a.champs_group) a2
+		LEFT JOIN
+				tm_club b
+		ON
+				a2.club_no = b.club_no
+	</select>
+	
+	<!-- 관리자페이지 경기일정관리 (챔피언스리그 / 그룹별 클럽목록) -->
+	<select id="select_rest_champs_group_clublist" parameterType="map" resultType="map">
+		SELECT
+				a2.club_no, a2.champs_group, CAST(a2.rank AS INT) rank, b.club_name
+		FROM 
+				(SELECT
+						a.club_no, a.champs_group,
+						(CASE
+								@group_code
+				 		 WHEN a.champs_group THEN @rownum:=@rownum+1
+						 ELSE @rownum:=1
+						 END) rank,
+						(@group_code:=a.champs_group) group_code
+				 FROM
+						tm_champs a, (SELECT @group_code:='', @rownum:=0 FROM DUAL) a1
+				 WHERE
+						a.champs_group = #{group}
+				 ORDER BY
+						a.champs_group) a2
+		LEFT JOIN
+				tm_club b
+		ON
+				a2.club_no = b.club_no
+	</select>
+	
+	<!-- 관리자페이지 선수관리 선수목록 totpage -->
+	<select id="select_all_playerlist_totpage" resultType="int">
+		SELECT
+				COUNT(player_no)
+		FROM
+				tm_player
+	</select>
+	
+	<!-- 관리자페이지 선수관리 선수검색 pagination totpage -->
+	<select id="select_search_player_totpage" parameterType="map" resultType="int">
+		SELECT
+				COUNT(player_no)
+		FROM
+				tm_player
+		WHERE
+				player_name LIKE '%${text}%'
+	</select>
+	
+	<!-- 관리자페이지 선수관리 선수검색 -->
+	<select id="select_search_player" parameterType="map" resultType="map">
+		SELECT
+				*
+		FROM
+				(SELECT
+						a.*, CAST(@rownum:=@rownum+1 AS INT) rank
+				FROM
+						tm_player a, (SELECT @rownum:=0) b
+				WHERE
+						player_name LIKE '%${text}%') a1
+		LIMIT
+				${spage}, 22
+	</select>
+	
+	<!-- 관리자페이지 감독관리 감독목록 -->
+	<!-- 
+	<select id="select_all_coachlist" parameterType="map" resultType="map">
+		SELECT
+				a.coach_no, a.country_no, a.coach_name, a.coach_birth, a.coach_age, a.coach_formation,
+				DATE_FORMAT(a.coach_date, '%Y-%m-%d %H:%i:%s') coach_date, b.club_no
+		FROM
+				 tm_coach a
+		LEFT JOIN
+				tm_club b
+		ON
+				a.coach_no = b.coach_no
+		LIMIT
+				${spage}, 22
+	</select>
+	  -->
+	  
+	<!-- 관리자페이지 감독관리 라이센스 조회 -->
+	<select id="select_rest_admin_coach_detail" parameterType="map" resultType="map">
+		SELECT
+				a.coach_no, a.country_no, b.country_name, a.coach_name, a.coach_birth, a.coach_age, a.coach_formation,
+				DATE_FORMAT(a.coach_date, '%Y-%m-%d') coach_date
+		FROM
+				tm_coach a
+		INNER JOIN
+				tm_country b
+		ON
+				a.country_no = b.country_no
+		WHERE
+				a.coach_no = #{no}
+	</select>
+	
+	<!-- 관리자페이지 감독관리 감독목록 totpage -->
+	<select id="select_all_coachlist_totpage" resultType="int">
+		SELECT
+				COUNT(coach_no)
+		FROM
+				tm_coach	
+	</select>
+	
+	<!-- 관리자페이지 감독관리 감독검색 pagination totpage -->
+	<select id="select_search_coach_totpage" parameterType="map" resultType="int">
+		SELECT
+				count(a.coach_no)
+		FROM
+			 	tm_coach a
+		LEFT JOIN
+				tm_club b
+		ON
+				a.coach_no = b.coach_no
+		WHERE
+				a.coach_name LIKE '%${text}%'
+	</select>
+	
+	<!-- 관리자페이지 감독관리 감독검색 -->
+	<select id="select_search_coach" parameterType="map" resultType="map">
+		SELECT
+				a1.coach_no, a1.country_no, a1.coach_name, a1.coach_birth, a1.coach_age, a1.coach_formation, DATE_FORMAT(a1.coach_date, '%Y-%m-%d %H:%i:%s') coach_date,
+				CAST(a1.rank AS INT) rank, c.club_no
+		FROM
+				(SELECT
+						a.coach_no, a.country_no, a.coach_name, a.coach_birth, a.coach_age, a.coach_formation, a.coach_date, @rownum:=@rownum+1 as rank	  
+				FROM
+						tm_coach a, (SELECT @rownum:=0) b
+				WHERE
+						a.coach_name LIKE '%${text}%') a1
+		LEFT JOIN
+				tm_club c
+		ON
+				a1.coach_no = c.coach_no
+		ORDER BY
+				a1.coach_no ASC
+		LIMIT
+				${spage}, 22
+	</select>
+	
+	<!-- 관리자페이지 클럽관리 이미지수정 -->
+	<update id="update_club_img" parameterType="map">
+		<foreach collection="club" item="club" separator=";" open="" close="" index="idx">
+			UPDATE
+					tm_club
+			SET
+					club_filedata = #{filedata[${idx}], jdbcType=BLOB}
+			WHERE
+					club_no = #{club}
+		</foreach>
+	</update>
+	
+	
+	<!-- 관리자페이지 국가관리 메인리스트 -->
+	<select id="select_country_list" resultType="map">
+		SELECT
+				a.continent_no, a.continent_name, b.country_no, b.country_name
+		FROM
+				tm_continent a
+		INNER JOIN
+				tm_country b
+		ON
+				a.continent_no = b.continent_no
+	</select>
+	
+	<!-- 관리자페이지 리그관리 메인리스트 -->
+	<select id="select_league_list" resultType="map">
+		SELECT 
+				ab.continent_no, ab.continent_name, ab.country_no, ab.country_name, c.league_no, c.league_name
+		FROM
+				tm_league c
+		INNER JOIN (
+						SELECT 
+								a.country_no, a.country_name, b.continent_no, b.continent_name
+						FROM
+								tm_country a
+						INNER JOIN
+								tm_continent b
+						ON
+								a.continent_no = b.continent_no) ab
+		ON
+				c.country_no = ab.country_no
+	</select>
+	
+	<!-- 관리자페이지 클럽관리 메인리스트 -->
+	<select id="select_club_list" resultType="map">
+		SELECT 
+				abc.continent_no, abc.continent_name, abc.country_no, abc.country_name, abc.league_no, abc.league_name, d.club_no, d.club_name
+		FROM tm_club d
+		INNER JOIN (
+						SELECT
+								ab.continent_no, ab.continent_name, ab.country_no, ab.country_name, c.league_no, c.league_name
+						FROM
+								tm_league c
+						INNER JOIN (
+										SELECT
+												a.country_no, a.country_name, b.continent_no, b.continent_name
+										FROM
+												tm_country a
+										INNER JOIN
+												tm_continent b
+										ON
+												a.continent_no = b.continent_no) ab
+						ON
+								c.country_no = ab.country_no) abc
+		ON
+				d.league_no = abc.league_no
+	</select>
+	
+<!-- 검색 카테고리 타입별 조회 -->
+
+	<!-- 회원관리 ===========================================================================================  -->
+	<update id="update_member_enabled" parameterType="map">
+		UPDATE
+				tm_member
+		SET
+				enabled = ${enabled}, 
+				block_date = <if test="enabled == 0">now()</if>
+								 <if test="enabled == 1">null</if>
+		WHERE
+				mem_id = #{id}
+	</update>
+	
+	
+	<!-- end =============================================================================================== -->
+
+	<!-- 국가관리 =========================================================================================== -->
+
+	<!-- SelectBox 대륙별 조회 -->
+	<select id="select_country_continent_selectbox" resultType="map">
+		SELECT
+				b.continent_no, b.continent_name, a.country_no, a.country_name
+		FROM
+				tm_country a
+		INNER JOIN
+				tm_continent b
+		ON
+				a.continent_no = b.continent_no
+		WHERE
+				a.continent_no = #{no}
+	</select>
+	
+	<!-- end =============================================================================================== -->
+	
+	
+	<!-- 리그관리 =========================================================================================== -->
+	
+	<!-- SelectBox 대륙별 조회 -->
+	<select id="select_league_continent_selectbox" resultType="map">
+		SELECT 
+				ab.continent_no, ab.continent_name, ab.country_no, ab.country_name, c.league_no, c.league_name
+		FROM
+				tm_league c
+		INNER JOIN (
+						SELECT 
+								a.country_no, a.country_name, b.continent_no, b.continent_name
+						FROM
+								tm_country a
+						INNER JOIN
+								tm_continent b
+						ON
+								a.continent_no = b.continent_no) ab
+		ON
+				c.country_no = ab.country_no
+		WHERE
+				ab.continent_no = #{no}
+	</select>
+	
+	<!-- SelectBox 국가별 조회 -->
+	<select id="select_league_country_selectbox" parameterType="int" resultType="map">
+		SELECT 
+				ab.continent_no, ab.continent_name, ab.country_no, ab.country_name, c.league_no, c.league_name
+		FROM
+				tm_league c
+		INNER JOIN (
+						SELECT 
+								a.country_no, a.country_name, b.continent_no, b.continent_name
+						FROM
+								tm_country a
+						INNER JOIN
+								tm_continent b
+						ON
+								a.continent_no = b.continent_no) ab
+		ON
+				c.country_no = ab.country_no
+		WHERE
+				ab.country_no = #{no}
+	</select>
+
+	<!-- end =============================================================================================== -->
+	
+	
+	<!-- 클럽관리 ===========================================================================================  -->
+
+	<!-- SelectBox 대륙별 조회 -->
+	<select id="select_club_continent_selectbox" parameterType="map" resultType="map">
+		SELECT
+				abc.continent_no, abc.continent_name, abc.country_no, abc.country_name, abc.league_no, abc.league_name, d.club_no, d.club_name
+		FROM
+				tm_club d
+		INNER JOIN (
+						SELECT 
+								ab.continent_no, ab.continent_name, ab.country_no, ab.country_name, c.league_no, c.league_name
+						FROM
+								tm_league c
+						INNER JOIN (
+										SELECT 
+												a.country_no, a.country_name, b.continent_no, b.continent_name
+										FROM
+											tm_country a
+										INNER JOIN
+											tm_continent b
+										ON
+											a.continent_no = b.continent_no) ab
+						ON
+								c.country_no = ab.country_no
+						) abc
+		ON
+				d.league_no = abc.league_no
+		WHERE
+				abc.continent_no = #{no}
+	</select>
+	
+	<!-- SelectBox 국가별 조회 -->
+	<select id="select_club_country_selectbox" parameterType="map" resultType="map">
+		SELECT
+				abc.continent_no, abc.continent_name, abc.country_no, abc.country_name, abc.league_no, abc.league_name, d.club_no, d.club_name
+		FROM
+				tm_club d
+		INNER JOIN (
+						SELECT 
+								ab.continent_no, ab.continent_name, ab.country_no, ab.country_name, c.league_no, c.league_name
+						FROM
+								tm_league c
+						INNER JOIN (
+										SELECT 
+												a.country_no, a.country_name, b.continent_no, b.continent_name
+										FROM
+											tm_country a
+										INNER JOIN
+											tm_continent b
+										ON
+											a.continent_no = b.continent_no) ab
+						ON
+								c.country_no = ab.country_no
+						) abc
+		ON
+				d.league_no = abc.league_no
+		WHERE
+				abc.country_no = #{no}
+	</select>
+	
+	<!-- SelectBox 리그별 조회 -->
+	<select id="select_club_league_selectbox" parameterType="map" resultType="map">
+		SELECT
+				abc.continent_no, abc.continent_name, abc.country_no, abc.country_name, abc.league_no, abc.league_name, d.club_no, d.club_name
+		FROM
+				tm_club d
+		INNER JOIN (
+						SELECT 
+								ab.continent_no, ab.continent_name, ab.country_no, ab.country_name, c.league_no, c.league_name
+						FROM
+								tm_league c
+						INNER JOIN (
+										SELECT 
+												a.country_no, a.country_name, b.continent_no, b.continent_name
+										FROM
+											tm_country a
+										INNER JOIN
+											tm_continent b
+										ON
+											a.continent_no = b.continent_no) ab
+						ON
+								c.country_no = ab.country_no
+						) abc
+		ON
+				d.league_no = abc.league_no
+		WHERE
+				abc.league_no = #{no}
+	</select>
+
+
+</mapper>

@@ -1,0 +1,1189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="tm_main">
+
+	<!-- 로그인 -->
+	<select id="select_member_login" parameterType="map" resultType="map">
+		SELECT
+				*
+		FROM
+				tm_member
+		WHERE
+				mem_id = #{id}
+	</select>
+	
+	<!-- 회원가입 (일반) -->
+	<insert id="insert_member" parameterType="map" useGeneratedKeys="false">
+		INSERT INTO
+				tm_member(mem_id, mem_pw, mem_name, mem_tel, mem_email, jointype)
+		VALUES
+				(#{id}, #{pw}, #{name}, #{tel}, #{email}, #{jointype})
+	</insert>
+	
+	<!-- 회원가입 (구단/감독) -->
+	<insert id="insert_member_other" parameterType="map" useGeneratedKeys="false">
+		INSERT INTO
+				tm_member(mem_id, mem_pw, mem_name, mem_tel, mem_email, jointype, enabled, authority)
+		VALUES
+				(#{id}, #{pw}, #{name}, #{tel}, #{email}, #{jointype}, 3,
+				<if test="jointype == 2">'ROLE_COACH'</if>
+				<if test="jointype == 3">'ROLE_CLUB'</if>
+				)
+	</insert>
+	
+	<!-- 아이디 찾기 -->
+	<select id="select_find_member" parameterType="map" resultType="map">
+		SELECT
+				mem_id
+		FROM
+				tm_member
+		WHERE
+				mem_name = #{name} AND ${type} = #{text}
+	</select>
+
+	<!-- 시즌기록(득점) -->
+	<select id="select_player_goal" resultType="map">
+		SELECT
+				b.club_no, b.club_name, a1.player_no, a1.player_name, COUNT(a1.match_no) attempts, SUM(a1.goal) goal
+		FROM
+			(SELECT
+					a.match_no, a.player_no, b.player_name, b.club_no, SUM(a.goal) goal
+			 FROM
+					tm_point a
+			 INNER JOIN
+					tm_player b
+			 ON
+					a.player_no = b.player_no
+			 GROUP BY
+					player_no, match_no) a1
+		INNER JOIN
+				tm_club b
+		ON
+				a1.club_no = b.club_no
+		GROUP BY
+				a1.player_no
+		ORDER BY
+				goal DESC, attempts ASC
+		LIMIT
+				4
+	</select>
+
+	<!-- 시즌기록(도움) -->
+	<select id="select_player_assist" resultType="map">
+		SELECT
+				b.club_no, b.club_name, a1.player_no, a1.player_name, COUNT(a1.match_no) attempts, SUM(a1.assist) assist
+		FROM
+			(SELECT
+					a.match_no, a.player_no, b.player_name, b.club_no, SUM(a.assist) assist
+			 FROM
+					tm_point a
+			 INNER JOIN
+					tm_player b
+			 ON
+					a.player_no = b.player_no
+			 GROUP BY
+					player_no, match_no) a1
+		INNER JOIN
+				tm_club b
+		ON
+				a1.club_no = b.club_no
+		GROUP BY
+				a1.player_no
+		ORDER BY
+				assist DESC, attempts ASC		
+		LIMIT
+				4
+	</select>
+
+	<!-- 시장가치 -->
+	<select id="select_player_mv" resultType="map">
+		SELECT
+				a.player_no, a.club_no, b.club_name, a.player_name, a.player_mv
+		FROM
+				tm_player a
+		INNER JOIN
+				tm_club b
+		ON
+				a.club_no = b.club_no
+		ORDER BY
+				player_mv DESC
+		LIMIT
+				4
+	</select>
+	
+	<!-- 많이 검색된 선수 -->
+	<select id="select_player_hit" resultType="map">
+		SELECT
+				a1.*, a2.country_no, a2.country_name
+		FROM
+				(SELECT
+						a.player_no, a.player_name, a.club_no, b.club_name, a.player_position1, a.player_position2, a.player_hit
+				 FROM
+				 		tm_player a
+				 INNER JOIN
+				 		tm_club b
+				 ON
+				 		a.club_no = b.club_no) a1
+		LEFT JOIN
+				(SELECT
+						c.player_no, c.country_no, d.country_name
+				 FROM
+				 		tm_player c
+				 INNER JOIN
+				 		tm_country d
+				 ON
+				 		c.country_no = d.country_no) a2
+		ON
+				a1.player_no = a2.player_no
+		ORDER BY
+				player_hit DESC
+		LIMIT
+				4
+	</select>
+
+	<!-- 메인페이지 카드 카테고리 -->
+	<select id="select_main_card_category" resultType="map">
+		SELECT
+				continent_no, continent_name
+		FROM
+				tm_continent
+	</select>
+	
+	<!-- 메인페이지 리그 경기일정 그리스 -->
+	<select id="select_greece_schedule" resultType="map">
+		SELECT
+				 aa.match_no, aa.league_no, aa.match_date, DATE_FORMAT(aa.match_kickoff, '%H:%i') match_kickoff, aa.match_home, aa.club_name home_name, bb.match_away, bb.club_name away_name
+		FROM
+				(SELECT
+						a.match_date, a.match_kickoff, a.match_home, b.club_name, a.match_no, a.league_no
+				 FROM
+				 		tm_match a
+				 INNER JOIN
+				 		tm_club b
+				 ON
+				 		a.match_home = b.club_no
+				 WHERE
+				 		a.league_no = 9
+				 ORDER BY
+				 		a.match_date ASC, a.match_kickoff ASC) aa
+		INNER JOIN
+				(SELECT
+						c.match_away, d.club_name, c.match_no
+				 FROM
+				 		tm_match c
+				 INNER JOIN
+				 		tm_club d
+				 ON
+				 		c.match_away = d.club_no
+				 ORDER BY
+				 		c.match_date ASC, c.match_kickoff ASC) bb
+		ON
+				 aa.match_no = bb.match_no
+		ORDER BY
+				 aa.match_date ASC, aa.match_kickoff ASC
+		LIMIT
+				6
+	</select>
+
+	<!-- 메인페이지 리그 경기일정 EPL -->
+	<select id="select_epl_schedule" resultType="map">
+		SELECT
+				 aa.match_no, aa.league_no, aa.match_date, DATE_FORMAT(aa.match_kickoff, '%H:%i') match_kickoff, aa.match_home, aa.club_name home_name, bb.match_away, bb.club_name away_name
+		FROM
+				(SELECT
+						a.match_date, a.match_kickoff, a.match_home, b.club_name, a.match_no, a.league_no
+				 FROM
+				 		tm_match a
+				 INNER JOIN
+				 		tm_club b
+				 ON
+				 		a.match_home = b.club_no
+				 WHERE
+				 		a.league_no = 6
+				 ORDER BY
+				 		a.match_date ASC, a.match_kickoff ASC) aa
+		INNER JOIN
+				(SELECT
+						c.match_away, d.club_name, c.match_no
+				 FROM
+				 		tm_match c
+				 INNER JOIN
+				 		tm_club d
+				 ON
+				 		c.match_away = d.club_no
+				 ORDER BY
+				 		c.match_date ASC, c.match_kickoff ASC) bb
+		ON
+				 aa.match_no = bb.match_no
+		ORDER BY
+				 aa.match_date ASC, aa.match_kickoff ASC
+		LIMIT
+				6
+	</select>
+	
+	<!-- 메인페이지 리그 경기일정 라리가 -->
+	<select id="select_laliga_schedule" resultType="map">
+		SELECT
+				 aa.match_no, aa.league_no, aa.match_date, DATE_FORMAT(aa.match_kickoff, '%H:%i') match_kickoff, aa.match_home, aa.club_name home_name, bb.match_away, bb.club_name away_name
+		FROM
+				(SELECT
+						a.match_date, a.match_kickoff, a.match_home, b.club_name, a.match_no, a.league_no
+				 FROM
+				 		tm_match a
+				 INNER JOIN
+				 		tm_club b
+				 ON
+				 		a.match_home = b.club_no
+				 WHERE
+				 		a.league_no = 17
+				 ORDER BY
+				 		a.match_date ASC, a.match_kickoff ASC) aa
+		INNER JOIN
+				(SELECT
+						c.match_away, d.club_name, c.match_no
+				 FROM
+				 		tm_match c
+				 INNER JOIN
+				 		tm_club d
+				 ON
+				 		c.match_away = d.club_no
+				 ORDER BY
+				 		c.match_date ASC, c.match_kickoff ASC) bb
+		ON
+				 aa.match_no = bb.match_no
+		ORDER BY
+				 aa.match_date ASC, aa.match_kickoff ASC
+		LIMIT
+				6
+	</select>
+	
+	<!-- 메인페이지 리그 경기일정 세리에 -->
+	<select id="select_seria_schedule" resultType="map">
+		SELECT
+				 aa.match_no, aa.league_no, aa.match_date, DATE_FORMAT(aa.match_kickoff, '%H:%i') match_kickoff, aa.match_home, aa.club_name home_name, bb.match_away, bb.club_name away_name
+		FROM
+				(SELECT
+						a.match_date, a.match_kickoff, a.match_home, b.club_name, a.match_no, a.league_no
+				 FROM
+				 		tm_match a
+				 INNER JOIN
+				 		tm_club b
+				 ON
+				 		a.match_home = b.club_no
+				 WHERE
+				 		a.league_no = 10
+				 ORDER BY
+				 		a.match_date ASC, a.match_kickoff ASC) aa
+		INNER JOIN
+				(SELECT
+						c.match_away, d.club_name, c.match_no
+				 FROM
+				 		tm_match c
+				 INNER JOIN
+				 		tm_club d
+				 ON
+				 		c.match_away = d.club_no
+				 ORDER BY
+				 		c.match_date ASC, c.match_kickoff ASC) bb
+		ON
+				 aa.match_no = bb.match_no
+		ORDER BY
+				 aa.match_date ASC, aa.match_kickoff ASC
+		LIMIT
+				6
+	</select>
+	
+	<!-- 메인페이지 챔스 경기일정 -->
+	<select id="select_champs_schedule" resultType="map">
+		SELECT
+				 aa.match_no, aa.match_date, DATE_FORMAT(aa.match_kickoff, '%H:%i') match_kickoff, aa.match_home, aa.club_name home_name, bb.match_away, bb.club_name away_name
+		FROM
+				(SELECT
+						a.match_date, a.match_kickoff, a.match_home, b.club_name, a.match_no, a.champs_group
+				 FROM
+				 		tm_champs_match a
+				 INNER JOIN
+				 		tm_club b
+				 ON
+				 		a.match_home = b.club_no
+				 WHERE
+				 		a.champs_group = #{group}
+				 ORDER BY
+				 		a.match_date ASC, a.match_kickoff ASC) aa
+		INNER JOIN
+				(SELECT
+						c.match_away, d.club_name, c.match_no
+				 FROM
+				 		tm_champs_match c
+				 INNER JOIN
+				 		tm_club d
+				 ON
+				 		c.match_away = d.club_no
+				 ORDER BY
+				 		c.match_date ASC, c.match_kickoff ASC) bb
+		ON
+				 aa.match_no = bb.match_no
+		LIMIT
+				4
+	</select>
+	
+	
+
+<!-- 클럽 순위 -->
+
+	<!-- 메인페이지 프리미어리그 -->
+	<select id="select_epl_clublist" resultType="map">
+		SELECT
+				c.league_no, c.club_no, c.club_name,
+				IFNULL(bb.attempts,0) attempts, IFNULL(bb.win,0) win, IFNULL(bb.draw,0) draw, IFNULL(bb.lose,0) lose, IFNULL(bb.vp,0) vp
+		FROM
+				tm_club c
+				
+		LEFT JOIN
+		
+			(SELECT
+					d1.league_no, d1.club_no, d1.club_name, d1.attempts, d1.win, d1.draw, d1.attempts-(d1.win+d1.draw) lose, (d1.win*3 + d1.draw) vp
+			FROM
+					(SELECT
+							c1.league_no, c1.club_no, c1.club_name, c1.attempts, IFNULL(c2.win,0) win, IFNULL(c2.draw,0) draw
+					 FROM
+							(SELECT
+									league_no, club_no, club_name, SUM(attempts) attempts
+							 FROM
+									(
+									(SELECT
+											b.league_no, b.club_no, b.club_name, COUNT(b.club_no) attempts
+									 FROM
+											tm_match a
+									 INNER JOIN
+											tm_club b
+									 ON
+											a.match_home = b.club_no
+									 WHERE
+											match_end = 0
+									 GROUP BY
+											b.club_no)
+									
+									 UNION ALL
+								  
+									(SELECT
+											 b.league_no, b.club_no, b.club_name, COUNT(b.club_no) attempts
+									 FROM
+											 tm_match a
+									 INNER JOIN
+											  tm_club b
+									 ON
+											  a.match_away = b.club_no
+									 WHERE
+											  match_end = 0
+									 GROUP BY
+											b.club_no)
+									 ) a1
+							 GROUP BY club_no) c1
+		
+					 LEFT JOIN
+		
+							((SELECT
+									b1.club_no, b1.club_name, IFNULL(b1.win,0) win, IFNULL(b2.draw,0) draw
+							 FROM
+									(SELECT
+											a1.club_no, a1.club_name, SUM(a1.win) win
+									 FROM
+											(
+											(SELECT
+													a.league_no, a.club_no, a.club_name, count(b.match_no) win
+											 FROM
+													tm_club a
+											 INNER JOIN
+													tm_match b
+											 ON
+													a.club_no = b.match_home
+											 WHERE
+													b.match_end = 0 AND b.match_win = a.club_no
+											 GROUP BY
+													a.club_no)
+											
+											 UNION ALL
+									  
+											(SELECT
+													a.league_no, a.club_no, a.club_name, count(b.match_no) win
+											 FROM
+													tm_club a
+											 INNER JOIN
+													tm_match b
+											 ON
+													a.club_no = b.match_away
+											 WHERE
+													b.match_end = 0 AND b.match_win = a.club_no
+											 GROUP BY
+													a.club_no)
+											 ) a1
+									 GROUP BY
+											a1.club_no) b1
+		
+							 LEFT JOIN
+		
+									(SELECT
+											a2.club_no, a2.club_name, SUM(a2.draw) draw
+									 FROM
+											((SELECT
+													a.league_no, a.club_no, a.club_name, count(b.match_no) draw
+											  FROM
+													tm_club a
+											  INNER JOIN
+													tm_match b
+											  ON
+													a.club_no = b.match_home
+											  WHERE
+													b.match_end = 0 AND b.match_win = 0
+											  GROUP BY
+													a.club_no) 
+											
+											  UNION ALL
+									
+											 (SELECT
+													a.league_no, a.club_no, a.club_name, count(b.match_no) draw
+											  FROM
+													tm_club a
+											  INNER JOIN
+													tm_match b
+											  ON
+													a.club_no = b.match_away
+											  WHERE
+													b.match_end = 0 AND b.match_win = 0
+											  GROUP BY
+													a.club_no)) a2
+									 GROUP BY
+											a2.club_no) b2
+		
+							 ON b1.club_no = b2.club_no)
+		
+							 UNION
+		
+							(SELECT
+									b2.club_no, b2.club_name, b1.win, b2.draw
+							 FROM
+									(SELECT
+											a1.club_no, a1.club_name, SUM(a1.win) win
+									 FROM
+											((SELECT
+													a.league_no, a.club_no, a.club_name, count(b.match_no) win
+											  FROM
+													tm_club a
+											  INNER JOIN
+													tm_match b
+											  ON
+													a.club_no = b.match_home
+											  WHERE
+													b.match_end = 0 AND b.match_win = a.club_no
+											  GROUP BY
+													a.club_no)
+											
+											  UNION ALL
+									  
+											 (SELECT
+													a.league_no, a.club_no, a.club_name, count(b.match_no) win
+											  FROM
+													tm_club a
+											  INNER JOIN
+													tm_match b
+											  ON
+													a.club_no = b.match_away
+											  WHERE
+													b.match_end = 0 AND b.match_win = a.club_no
+											  GROUP BY
+													a.club_no)) a1
+									 GROUP BY
+											a1.club_no) b1
+		
+							 RIGHT JOIN
+		
+									(SELECT
+											a2.club_no, a2.club_name, SUM(a2.draw) draw
+									 FROM
+											(
+											(SELECT
+													a.league_no, a.club_no, a.club_name, count(b.match_no) draw
+											 FROM
+													tm_club a
+											 INNER JOIN
+													tm_match b
+											 ON
+													a.club_no = b.match_home
+											 WHERE
+													b.match_end = 0 AND b.match_win = 0
+											 GROUP BY
+													a.club_no) 
+											
+											 UNION ALL
+									
+											(SELECT
+													a.league_no, a.club_no, a.club_name, count(b.match_no) draw
+											 FROM
+													tm_club a
+											 INNER JOIN
+													tm_match b
+											 ON
+													a.club_no = b.match_away
+											 WHERE
+													b.match_end = 0 AND b.match_win = 0
+											 GROUP BY
+													a.club_no)
+											 ) a2
+									 GROUP BY
+											a2.club_no) b2
+							 ON
+									b1.club_no = b2.club_no)) c2
+					ON
+							c1.club_no = c2.club_no) d1 ) bb
+		ON
+				c.club_no = bb.club_no
+		WHERE
+				c.league_no = 6              
+		ORDER BY
+				vp DESC, win DESC, draw DESC
+	</select>
+	
+	<!-- 메인페이지 라리가 -->
+	<select id="select_laliga_clublist" resultType="map">
+		SELECT
+				c.league_no, c.club_no, c.club_name,
+				IFNULL(bb.attempts,0) attempts, IFNULL(bb.win,0) win, IFNULL(bb.draw,0) draw, IFNULL(bb.lose,0) lose, IFNULL(bb.vp,0) vp
+		FROM
+				tm_club c
+				
+		LEFT JOIN
+		
+			(SELECT
+					d1.league_no, d1.club_no, d1.club_name, d1.attempts, d1.win, d1.draw, d1.attempts-(d1.win+d1.draw) lose, (d1.win*3 + d1.draw) vp
+			FROM
+					(SELECT
+							c1.league_no, c1.club_no, c1.club_name, c1.attempts, IFNULL(c2.win,0) win, IFNULL(c2.draw,0) draw
+					 FROM
+							(SELECT
+									league_no, club_no, club_name, SUM(attempts) attempts
+							 FROM
+									(
+									(SELECT
+											b.league_no, b.club_no, b.club_name, COUNT(b.club_no) attempts
+									 FROM
+											tm_match a
+									 INNER JOIN
+											tm_club b
+									 ON
+											a.match_home = b.club_no
+									 WHERE
+											match_end = 0
+									 GROUP BY
+											b.club_no)
+									
+									 UNION ALL
+								  
+									(SELECT
+											 b.league_no, b.club_no, b.club_name, COUNT(b.club_no) attempts
+									 FROM
+											 tm_match a
+									 INNER JOIN
+											  tm_club b
+									 ON
+											  a.match_away = b.club_no
+									 WHERE
+											  match_end = 0
+									 GROUP BY
+											b.club_no)
+									 ) a1
+							 GROUP BY club_no) c1
+		
+					 LEFT JOIN
+		
+							((SELECT
+									b1.club_no, b1.club_name, IFNULL(b1.win,0) win, IFNULL(b2.draw,0) draw
+							 FROM
+									(SELECT
+											a1.club_no, a1.club_name, SUM(a1.win) win
+									 FROM
+											(
+											(SELECT
+													a.league_no, a.club_no, a.club_name, count(b.match_no) win
+											 FROM
+													tm_club a
+											 INNER JOIN
+													tm_match b
+											 ON
+													a.club_no = b.match_home
+											 WHERE
+													b.match_end = 0 AND b.match_win = a.club_no
+											 GROUP BY
+													a.club_no)
+											
+											 UNION ALL
+									  
+											(SELECT
+													a.league_no, a.club_no, a.club_name, count(b.match_no) win
+											 FROM
+													tm_club a
+											 INNER JOIN
+													tm_match b
+											 ON
+													a.club_no = b.match_away
+											 WHERE
+													b.match_end = 0 AND b.match_win = a.club_no
+											 GROUP BY
+													a.club_no)
+											 ) a1
+									 GROUP BY
+											a1.club_no) b1
+		
+							 LEFT JOIN
+		
+									(SELECT
+											a2.club_no, a2.club_name, SUM(a2.draw) draw
+									 FROM
+											((SELECT
+													a.league_no, a.club_no, a.club_name, count(b.match_no) draw
+											  FROM
+													tm_club a
+											  INNER JOIN
+													tm_match b
+											  ON
+													a.club_no = b.match_home
+											  WHERE
+													b.match_end = 0 AND b.match_win = 0
+											  GROUP BY
+													a.club_no) 
+											
+											  UNION ALL
+									
+											 (SELECT
+													a.league_no, a.club_no, a.club_name, count(b.match_no) draw
+											  FROM
+													tm_club a
+											  INNER JOIN
+													tm_match b
+											  ON
+													a.club_no = b.match_away
+											  WHERE
+													b.match_end = 0 AND b.match_win = 0
+											  GROUP BY
+													a.club_no)) a2
+									 GROUP BY
+											a2.club_no) b2
+		
+							 ON b1.club_no = b2.club_no)
+		
+							 UNION
+		
+							(SELECT
+									b2.club_no, b2.club_name, b1.win, b2.draw
+							 FROM
+									(SELECT
+											a1.club_no, a1.club_name, SUM(a1.win) win
+									 FROM
+											((SELECT
+													a.league_no, a.club_no, a.club_name, count(b.match_no) win
+											  FROM
+													tm_club a
+											  INNER JOIN
+													tm_match b
+											  ON
+													a.club_no = b.match_home
+											  WHERE
+													b.match_end = 0 AND b.match_win = a.club_no
+											  GROUP BY
+													a.club_no)
+											
+											  UNION ALL
+									  
+											 (SELECT
+													a.league_no, a.club_no, a.club_name, count(b.match_no) win
+											  FROM
+													tm_club a
+											  INNER JOIN
+													tm_match b
+											  ON
+													a.club_no = b.match_away
+											  WHERE
+													b.match_end = 0 AND b.match_win = a.club_no
+											  GROUP BY
+													a.club_no)) a1
+									 GROUP BY
+											a1.club_no) b1
+		
+							 RIGHT JOIN
+		
+									(SELECT
+											a2.club_no, a2.club_name, SUM(a2.draw) draw
+									 FROM
+											(
+											(SELECT
+													a.league_no, a.club_no, a.club_name, count(b.match_no) draw
+											 FROM
+													tm_club a
+											 INNER JOIN
+													tm_match b
+											 ON
+													a.club_no = b.match_home
+											 WHERE
+													b.match_end = 0 AND b.match_win = 0
+											 GROUP BY
+													a.club_no) 
+											
+											 UNION ALL
+									
+											(SELECT
+													a.league_no, a.club_no, a.club_name, count(b.match_no) draw
+											 FROM
+													tm_club a
+											 INNER JOIN
+													tm_match b
+											 ON
+													a.club_no = b.match_away
+											 WHERE
+													b.match_end = 0 AND b.match_win = 0
+											 GROUP BY
+													a.club_no)
+											 ) a2
+									 GROUP BY
+											a2.club_no) b2
+							 ON
+									b1.club_no = b2.club_no)) c2
+					ON
+							c1.club_no = c2.club_no) d1 ) bb
+		ON
+				c.club_no = bb.club_no
+		WHERE
+				c.league_no = 17              
+		ORDER BY
+				vp DESC, win DESC, draw DESC
+	</select>
+		
+	<!-- 메인페이지 세리에 A -->
+	<select id="select_seria_clublist" resultType="map">
+		SELECT
+				c.league_no, c.club_no, c.club_name,
+				IFNULL(bb.attempts,0) attempts, IFNULL(bb.win,0) win, IFNULL(bb.draw,0) draw, IFNULL(bb.lose,0) lose, IFNULL(bb.vp,0) vp
+		FROM
+				tm_club c
+				
+		LEFT JOIN
+		
+			(SELECT
+					d1.league_no, d1.club_no, d1.club_name, d1.attempts, d1.win, d1.draw, d1.attempts-(d1.win+d1.draw) lose, (d1.win*3 + d1.draw) vp
+			FROM
+					(SELECT
+							c1.league_no, c1.club_no, c1.club_name, c1.attempts, IFNULL(c2.win,0) win, IFNULL(c2.draw,0) draw
+					 FROM
+							(SELECT
+									league_no, club_no, club_name, SUM(attempts) attempts
+							 FROM
+									(
+									(SELECT
+											b.league_no, b.club_no, b.club_name, COUNT(b.club_no) attempts
+									 FROM
+											tm_match a
+									 INNER JOIN
+											tm_club b
+									 ON
+											a.match_home = b.club_no
+									 WHERE
+											match_end = 0
+									 GROUP BY
+											b.club_no)
+									
+									 UNION ALL
+								  
+									(SELECT
+											 b.league_no, b.club_no, b.club_name, COUNT(b.club_no) attempts
+									 FROM
+											 tm_match a
+									 INNER JOIN
+											  tm_club b
+									 ON
+											  a.match_away = b.club_no
+									 WHERE
+											  match_end = 0
+									 GROUP BY
+											b.club_no)
+									 ) a1
+							 GROUP BY club_no) c1
+		
+					 LEFT JOIN
+		
+							((SELECT
+									b1.club_no, b1.club_name, IFNULL(b1.win,0) win, IFNULL(b2.draw,0) draw
+							 FROM
+									(SELECT
+											a1.club_no, a1.club_name, SUM(a1.win) win
+									 FROM
+											(
+											(SELECT
+													a.league_no, a.club_no, a.club_name, count(b.match_no) win
+											 FROM
+													tm_club a
+											 INNER JOIN
+													tm_match b
+											 ON
+													a.club_no = b.match_home
+											 WHERE
+													b.match_end = 0 AND b.match_win = a.club_no
+											 GROUP BY
+													a.club_no)
+											
+											 UNION ALL
+									  
+											(SELECT
+													a.league_no, a.club_no, a.club_name, count(b.match_no) win
+											 FROM
+													tm_club a
+											 INNER JOIN
+													tm_match b
+											 ON
+													a.club_no = b.match_away
+											 WHERE
+													b.match_end = 0 AND b.match_win = a.club_no
+											 GROUP BY
+													a.club_no)
+											 ) a1
+									 GROUP BY
+											a1.club_no) b1
+		
+							 LEFT JOIN
+		
+									(SELECT
+											a2.club_no, a2.club_name, SUM(a2.draw) draw
+									 FROM
+											((SELECT
+													a.league_no, a.club_no, a.club_name, count(b.match_no) draw
+											  FROM
+													tm_club a
+											  INNER JOIN
+													tm_match b
+											  ON
+													a.club_no = b.match_home
+											  WHERE
+													b.match_end = 0 AND b.match_win = 0
+											  GROUP BY
+													a.club_no) 
+											
+											  UNION ALL
+									
+											 (SELECT
+													a.league_no, a.club_no, a.club_name, count(b.match_no) draw
+											  FROM
+													tm_club a
+											  INNER JOIN
+													tm_match b
+											  ON
+													a.club_no = b.match_away
+											  WHERE
+													b.match_end = 0 AND b.match_win = 0
+											  GROUP BY
+													a.club_no)) a2
+									 GROUP BY
+											a2.club_no) b2
+		
+							 ON b1.club_no = b2.club_no)
+		
+							 UNION
+		
+							(SELECT
+									b2.club_no, b2.club_name, b1.win, b2.draw
+							 FROM
+									(SELECT
+											a1.club_no, a1.club_name, SUM(a1.win) win
+									 FROM
+											((SELECT
+													a.league_no, a.club_no, a.club_name, count(b.match_no) win
+											  FROM
+													tm_club a
+											  INNER JOIN
+													tm_match b
+											  ON
+													a.club_no = b.match_home
+											  WHERE
+													b.match_end = 0 AND b.match_win = a.club_no
+											  GROUP BY
+													a.club_no)
+											
+											  UNION ALL
+									  
+											 (SELECT
+													a.league_no, a.club_no, a.club_name, count(b.match_no) win
+											  FROM
+													tm_club a
+											  INNER JOIN
+													tm_match b
+											  ON
+													a.club_no = b.match_away
+											  WHERE
+													b.match_end = 0 AND b.match_win = a.club_no
+											  GROUP BY
+													a.club_no)) a1
+									 GROUP BY
+											a1.club_no) b1
+		
+							 RIGHT JOIN
+		
+									(SELECT
+											a2.club_no, a2.club_name, SUM(a2.draw) draw
+									 FROM
+											(
+											(SELECT
+													a.league_no, a.club_no, a.club_name, count(b.match_no) draw
+											 FROM
+													tm_club a
+											 INNER JOIN
+													tm_match b
+											 ON
+													a.club_no = b.match_home
+											 WHERE
+													b.match_end = 0 AND b.match_win = 0
+											 GROUP BY
+													a.club_no) 
+											
+											 UNION ALL
+									
+											(SELECT
+													a.league_no, a.club_no, a.club_name, count(b.match_no) draw
+											 FROM
+													tm_club a
+											 INNER JOIN
+													tm_match b
+											 ON
+													a.club_no = b.match_away
+											 WHERE
+													b.match_end = 0 AND b.match_win = 0
+											 GROUP BY
+													a.club_no)
+											 ) a2
+									 GROUP BY
+											a2.club_no) b2
+							 ON
+									b1.club_no = b2.club_no)) c2
+					ON
+							c1.club_no = c2.club_no) d1 ) bb
+		ON
+				c.club_no = bb.club_no
+		WHERE
+				c.league_no = 10              
+		ORDER BY
+				vp DESC, win DESC, draw DESC
+	</select>
+	
+	<!-- 메인페이지 챔스 -->
+	<select id="select_champs_clublist" parameterType="map" resultType="map">
+		SELECT
+				aa.champs_group, aa.league_no, aa.club_no, aa.club_name,
+				IFNULL(bb.attempts,0) attempts, IFNULL(bb.win,0) win, IFNULL(bb.draw,0) draw, IFNULL(bb.lose,0) lose, IFNULL(bb.vp,0) vp
+		FROM
+				(SELECT c.league_no, c.club_no, c.club_name, d.champs_group FROM tm_club c INNER JOIN tm_champs d ON c.club_no = d.club_no) aa
+				
+		LEFT JOIN
+		
+			(SELECT
+					d1.champs_group, d1.league_no, d1.club_no, d1.club_name,
+					d1.attempts, d1.win, d1.draw, d1.attempts-(d1.win+d1.draw) lose, (d1.win*3 + d1.draw) vp
+			FROM
+					(SELECT
+							c1.champs_group, c1.league_no, c1.club_no, c1.club_name, c1.attempts, c2.win, c2.draw
+					 FROM
+							(SELECT
+									champs_group, league_no, club_no, club_name, SUM(attempts) attempts
+							 FROM
+									(
+									(SELECT
+											a.champs_group, b.league_no, b.club_no, b.club_name, COUNT(b.club_no) attempts
+									 FROM
+											tm_champs_match a
+									 INNER JOIN
+											tm_club b
+									 ON
+											a.match_home = b.club_no
+									 WHERE
+											match_end = 0
+									 GROUP BY
+											b.club_no)
+									
+									 UNION ALL
+								  
+								    (SELECT
+											 a.champs_group, b.league_no, b.club_no, b.club_name, COUNT(b.club_no) attempts
+									 FROM
+											 tm_champs_match a
+									 INNER JOIN
+											  tm_club b
+									 ON
+											  a.match_away = b.club_no
+									 WHERE
+											  match_end = 0
+									 GROUP BY
+											b.club_no)
+									 ) a1
+							 GROUP BY club_no) c1
+		
+					 LEFT JOIN
+		
+							((SELECT
+									b1.champs_group, b1.club_no, b1.club_name, IFNULL(b1.win,0) win, IFNULL(b2.draw,0) draw
+							 FROM
+									(SELECT
+											a1.champs_group, a1.club_no, a1.club_name, SUM(a1.win) win
+									 FROM
+											(
+		                                    (SELECT
+													b.champs_group, a.league_no, a.club_no, a.club_name, count(b.match_no) win
+											 FROM
+													tm_club a
+											 INNER JOIN
+													tm_champs_match b
+											 ON
+													a.club_no = b.match_home
+											 WHERE
+													b.match_end = 0 AND b.match_win = a.club_no
+											 GROUP BY
+													a.club_no)
+											
+											 UNION ALL
+									  
+											(SELECT
+													b.champs_group, a.league_no, a.club_no, a.club_name, count(b.match_no) win
+											 FROM
+													tm_club a
+											 INNER JOIN
+													tm_champs_match b
+											 ON
+													a.club_no = b.match_away
+											 WHERE
+													b.match_end = 0 AND b.match_win = a.club_no
+											 GROUP BY
+													a.club_no)
+											 ) a1
+									 GROUP BY
+											a1.club_no) b1
+		
+							 LEFT JOIN
+		
+									(SELECT
+											a2.champs_group, a2.club_no, a2.club_name, SUM(a2.draw) draw
+									 FROM
+											((SELECT
+													b.champs_group, a.league_no, a.club_no, a.club_name, count(b.match_no) draw
+											  FROM
+													tm_club a
+											  INNER JOIN
+													tm_champs_match b
+											  ON
+													a.club_no = b.match_home
+											  WHERE
+													b.match_end = 0 AND b.match_win = 0
+											  GROUP BY
+													a.club_no) 
+											
+											  UNION ALL
+									
+											 (SELECT
+													b.champs_group, a.league_no, a.club_no, a.club_name, count(b.match_no) draw
+											  FROM
+													tm_club a
+											  INNER JOIN
+													tm_champs_match b
+											  ON
+													a.club_no = b.match_away
+											  WHERE
+													b.match_end = 0 AND b.match_win = 0
+											  GROUP BY
+													a.club_no)) a2
+									 GROUP BY
+											a2.club_no) b2
+		
+							 ON b1.club_no = b2.club_no)
+		
+							 UNION
+		
+							(SELECT
+									b2.champs_group, b2.club_no, b2.club_name, b1.win, b2.draw
+							 FROM
+									(SELECT
+											a1.champs_group, a1.club_no, a1.club_name, SUM(a1.win) win
+									 FROM
+											((SELECT
+													b.champs_group, a.league_no, a.club_no, a.club_name, count(b.match_no) win
+											  FROM
+													tm_club a
+											  INNER JOIN
+													tm_champs_match b
+											  ON
+													a.club_no = b.match_home
+											  WHERE
+													b.match_end = 0 AND b.match_win = a.club_no
+											  GROUP BY
+													a.club_no)
+											
+											  UNION ALL
+									  
+											 (SELECT
+													b.champs_group, a.league_no, a.club_no, a.club_name, count(b.match_no) win
+											  FROM
+													tm_club a
+											  INNER JOIN
+													tm_champs_match b
+											  ON
+													a.club_no = b.match_away
+											  WHERE
+													b.match_end = 0 AND b.match_win = a.club_no
+											  GROUP BY
+													a.club_no)) a1
+									 GROUP BY
+											a1.club_no) b1
+		
+							 RIGHT JOIN
+		
+									(SELECT
+											a2.champs_group, a2.club_no, a2.club_name, SUM(a2.draw) draw
+									 FROM
+											(
+											(SELECT
+													b.champs_group, a.league_no, a.club_no, a.club_name, count(b.match_no) draw
+											 FROM
+													tm_club a
+											 INNER JOIN
+													tm_champs_match b
+											 ON
+													a.club_no = b.match_home
+											 WHERE
+													b.match_end = 0 AND b.match_win = 0
+											 GROUP BY
+													a.club_no) 
+											
+											 UNION ALL
+									
+											(SELECT
+													b.champs_group, a.league_no, a.club_no, a.club_name, count(b.match_no) draw
+											 FROM
+													tm_club a
+											 INNER JOIN
+													tm_champs_match b
+											 ON
+													a.club_no = b.match_away
+											 WHERE
+													b.match_end = 0 AND b.match_win = 0
+											 GROUP BY
+													a.club_no)
+											 ) a2
+									 GROUP BY
+											a2.club_no) b2
+							 ON
+							 		b1.club_no = b2.club_no)) c2
+					ON
+							c1.club_no = c2.club_no) d1 ) bb
+		ON
+				aa.club_no = bb.club_no
+		WHERE
+				aa.champs_group = #{group}                
+		ORDER BY
+				vp DESC, win DESC, draw DESC
+	</select>
+
+</mapper>

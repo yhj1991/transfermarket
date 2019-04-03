@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="tm_support">
+	
+	<!-- 게시판 카테고리 -->
+	<select id="select_support_category" resultType="map">
+		SELECT
+				category_no, category_name
+		FROM
+				tm_support_category
+	</select>
+	
+	<!-- 게시판 목록 -->
+	<select id="select_supportlist" parameterType="map" resultType="map">
+		SELECT
+				a.support_no, a.support_category, a.support_title, a.support_writer, DATE_FORMAT(support_date, '%Y-%m-%d %H:%i:%s') support_date,
+				a.support_hit, b.category_name 
+		FROM
+				tm_support a
+		INNER JOIN
+				tm_support_category b
+		ON
+				a.support_category = b.category_no
+		ORDER BY
+				support_no DESC
+		LIMIT
+				${page}, 15
+	</select>
+	
+	<!-- 게시판 총 페이지 -->
+	<select id="select_supportlist_totpage" resultType="int">
+		SELECT
+				COUNT(support_no)
+		FROM
+				tm_support
+	</select>
+	
+	<!-- 게시판 내가쓴글 -->
+	<select id="select_mysupport" parameterType="map" resultType="map">
+		SELECT
+				a.support_no, a.support_category, a.support_title, a.support_writer, DATE_FORMAT(support_date, '%Y-%m-%d %H:%i:%s') support_date,
+				a.support_hit, b.category_name 
+		FROM
+				tm_support a
+		INNER JOIN
+				tm_support_category b
+		ON
+				a.support_category = b.category_no
+		WHERE
+				support_writer = #{id}
+		ORDER BY
+				a.support_no DESC
+		LIMIT
+				${page}, 15
+	</select>
+	
+	<select id="select_mysupport_totpage" parameterType="map" resultType="int">
+		SELECT
+				COUNT(a.support_no)
+		FROM
+				tm_support a
+		INNER JOIN
+				tm_support_category b
+		ON
+				a.support_category = b.category_no
+		WHERE
+				support_writer = #{id}
+		ORDER BY
+				a.support_no DESC
+	</select>
+	
+	<!-- 게시판 조회수 -->
+	<update id="update_support_one_hit" parameterType="map">
+		UPDATE
+				tm_support
+		SET
+				support_hit = support_hit + 1
+		WHERE
+				support_no = #{no}
+	</update>
+	
+	<!-- 게시판 조회 -->
+	<resultMap id="select_support_one_map" type="map">
+		<result property="support_content" column="support_content" javaType="String"/>
+	</resultMap>
+	<select id="select_support_one" parameterType="map" resultMap="select_support_one_map">
+		SELECT
+				a.support_no, a.support_category, a.support_title, a.support_content, a.support_writer, DATE_FORMAT(support_date, '%Y-%m-%d %H:%i:%s') support_date,
+				a.support_hit, b.category_name 
+		FROM
+				tm_support a
+		INNER JOIN
+				tm_support_category b
+		ON
+				a.support_category = b.category_no
+		WHERE
+				support_no = #{no}
+	</select>
+	
+	<!-- 게시판 이전글 -->
+	<select id="select_support_prev" parameterType="map" resultType="int">
+		SELECT
+				IFNULL(MAX(support_no), 0) prev
+		FROM
+				tm_support
+		WHERE
+				support_no <![CDATA[<]]> #{no}
+	</select>
+	
+	<!-- 게시판 다음글 -->
+	<select id="select_support_next" parameterType="map" resultType="int">
+		SELECT
+				IFNULL(MIN(support_no), 0) next
+		FROM
+				tm_support
+		WHERE
+				support_no <![CDATA[>]]> #{no}
+	</select>
+	
+	<!-- 게시판 글쓰기 -->
+	<insert id="insert_support_one" parameterType="map" useGeneratedKeys="false">
+		INSERT INTO
+				tm_support(support_category, support_title, support_content, support_writer)
+		VALUES
+				(#{category}, #{title}, #{content}, #{writer})
+	</insert>
+	
+	<!-- 게시판 검색 pagination -->
+	<select id="select_search_supportlist_page" parameterType="map" resultType="int">
+		SELECT
+				COUNT(support_no) totpage
+		FROM
+				tm_support a
+		INNER JOIN
+				tm_support_category b
+		ON
+				a.support_category = b.category_no
+		WHERE
+				<if test="category > 0">support_category = #{category} AND </if>
+				<choose>
+					<when test="type eq 'support_t_c'">(support_title LIKE '%${text}%' OR support_content LIKE '%${text}%')</when>
+					<otherwise>(${type} LIKE '%${text}%')</otherwise>
+				</choose>
+	</select>
+	
+	<!-- 게시판 검색 -->
+	<select id="select_search_supportlist" parameterType="map" resultType="map">
+		SELECT
+				a.support_no, a.support_category, a.support_title, a.support_writer, DATE_FORMAT(support_date, '%Y-%m-%d %H:%i:%s') support_date,
+				a.support_hit, b.category_name 
+		FROM
+				tm_support a
+		INNER JOIN
+				tm_support_category b
+		ON
+				a.support_category = b.category_no
+		WHERE
+				<if test="category > 0">support_category = #{category} AND </if>
+				<choose>
+					<when test="type eq 'support_t_c'">(support_title LIKE '%${text}%' OR support_content LIKE '%${text}%')</when>
+					<otherwise>(${type} LIKE '%${text}%')</otherwise>
+				</choose>
+		LIMIT
+			${page}, 15
+	</select>
+	
+	<!-- 게시판 댓글조회 -->
+	<select id="select_support_comment" parameterType="map" resultType="map">
+		SELECT
+				*
+		FROM
+				tm_comment
+		WHERE
+				support_no = #{no}
+	</select>
+	
+	<!-- 게시판 댓글등록 -->
+	<insert id="insert_support_comment" parameterType="map" useGeneratedKeys="false">
+		INSERT INTO
+				tm_comment(support_no, comment_text, comment_writer)
+		VALUES
+				(#{no}, #{text}, #{id})	
+	</insert>
+	
+	<!-- 게시판 답댓글등록 -->
+	<insert id="insert_support_recomment" parameterType="map" useGeneratedKeys="false">
+		INSERT INTO
+				tm_comment(support_no, comment_text, comment_writer, parent_no, parent_writer, comment_depth)
+		VALUES
+				(#{supno}, #{text}, #{id}, #{parno}, #{parw}, #{depth})
+	</insert>
+	
+</mapper>

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="tm_img">
+
+	<!-- 대륙 이미지 -->
+	<resultMap id="continent_img_map" type="map">
+		<result property="continent_filedata" column="continent_filedata" jdbcType="BLOB" javaType="[B"/>
+	</resultMap>
+	<select id="select_continent_img" parameterType="map" resultMap="continent_img_map">
+		SELECT 
+				continent_filedata 
+		FROM 
+				tm_continent
+		WHERE
+				continent_no = #{no}
+	</select>
+	
+	<!-- 국가 이미지 -->
+	<resultMap id="country_img_map" type="map">
+		<result property="country_filedata" column="country_filedata" jdbcType="BLOB" javaType="[B"/>
+	</resultMap>
+	<select id="select_country_img" parameterType="map" resultMap="country_img_map">
+		SELECT 
+				country_filedata 
+		FROM 
+				tm_country
+		WHERE
+				country_no = #{no}
+	</select>
+	
+	<!-- 리그 이미지 -->
+	<resultMap id="league_img_map" type="map">
+		<result property="league_filedata" column="league_filedata" jdbcType="BLOB" javaType="[B"/>
+	</resultMap>
+	<select id="select_league_img" parameterType="map" resultMap="league_img_map">
+		SELECT 
+				league_filedata 
+		FROM 
+				tm_league
+		WHERE
+				league_no = #{no}
+	</select>
+	
+	<!-- 클럽 이미지 -->
+	<resultMap id="club_img_map" type="map">
+		<result property="club_filedata" column="club_filedata" jdbcType="BLOB" javaType="[B"/>
+	</resultMap>
+	<select id="select_club_img" parameterType="map" resultMap="club_img_map">
+		SELECT 
+				club_filedata 
+		FROM 
+				tm_club
+		WHERE
+				club_no = #{no}
+	</select>
+	
+	<!-- 선수 이미지 -->
+	<resultMap id="player_img_map" type="map">
+		<result property="club_filedata" column="club_filedata" jdbcType="BLOB" javaType="[B"/>
+	</resultMap>
+	<select id="select_player_img" parameterType="map" resultMap="player_img_map">
+		SELECT 
+				player_filedata 
+		FROM 
+				tm_player
+		WHERE
+				player_no = #{no}
+	</select>
+	
+	<!-- 감독 이미지 -->
+	<resultMap id="coach_img_map" type="map">
+		<result property="coach_filedata" column="coach_filedata" jdbcType="BLOB" javaType="[B"/>
+	</resultMap>
+	<select id="select_coach_img" parameterType="map" resultMap="coach_img_map">
+		SELECT 
+				coach_filedata 
+		FROM 
+				tm_coach
+		WHERE
+				coach_no = #{no}
+	</select>
+	
+	<!-- 포지션 이미지 -->
+	<resultMap id="position_img_map" type="map">
+		<result property="position_filedata" column="position_filedata" jdbcType="BLOB" javaType="[B"/>
+	</resultMap>
+	<select id="select_position_img" parameterType="map" resultMap="position_img_map">
+		SELECT
+				position_filedata
+		FROM
+				tm_position
+		WHERE
+				position2_name = #{position2}
+	</select>
+	
+	<!-- 포메이션 이미지 -->
+	<resultMap id="formation_img_map" type="map">
+		<result property="formation_filedata" column="formation_filedata" jdbcType="BLOB" javaType="[B"/>
+	</resultMap>
+	<select id="select_formation_img" parameterType="map" resultMap="formation_img_map">
+		SELECT
+				formation_filedata
+		FROM
+				tm_formation
+		WHERE
+				formation_name = #{formation}
+	</select>
+	
+</mapper>
