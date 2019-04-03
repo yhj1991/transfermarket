@@ -1,2 +1,3 @@
 # transfermarket
-portfolio transfermarket
+안녕하세요. 양현진의 포트폴리오 소스코드 입니다.
+프로젝트는 현재 78~79%의 작업이 완료 되었습니다.(매일매일 진행중)
