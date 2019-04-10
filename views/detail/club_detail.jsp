@@ -64,7 +64,12 @@
 		</tr>
 		<tr>
 			<td>소속리그</td>
-			<td><img src="${pageContext.request.contextPath}/img/league_img.do?no=${club.league_no}" style="margin-right:5px; width:18px; height:24px"/><span>${club.league_name}</span></td>
+			<td>
+				<a href="${pageContext.request.contextPath}/detail/league.do?no=${club.league_no}">
+					<img src="${pageContext.request.contextPath}/img/league_img.do?no=${club.league_no}" style="margin-right:5px; width:18px; height:24px"/>
+					<span>${club.league_name}</span>
+				</a>
+			</td>
 		</tr>
 		<tr>
 			<td>주소</td>

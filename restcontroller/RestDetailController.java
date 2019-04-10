@@ -38,7 +38,7 @@ public class RestDetailController {
 			return jsonMap;
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 			return null;
 		}
 	}
@@ -62,7 +62,7 @@ public class RestDetailController {
 			return jsonMap;
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 			return null;
 		}
 	}
@@ -86,7 +86,7 @@ public class RestDetailController {
 			return jsonMap;
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 			return null;
 		}
 	}
@@ -112,7 +112,7 @@ public class RestDetailController {
 			return jsonMap;
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 			return null;
 		}
 	}

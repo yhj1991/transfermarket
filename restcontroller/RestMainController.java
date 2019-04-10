@@ -46,7 +46,7 @@ public class RestMainController {
 			return jsonMap; 
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 			return null;
 		}
 	}
@@ -68,7 +68,7 @@ public class RestMainController {
 			jsonMap.put("mem", mainDAO.selectFindMember(jsonMap));
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 		}
 		return jsonMap;
 	}
@@ -91,7 +91,7 @@ public class RestMainController {
 			return jsonMap; 
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 			return null;
 		}
 	}
@@ -113,7 +113,7 @@ public class RestMainController {
 			return jsonMap; 
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 			return null;
 		}
 	}

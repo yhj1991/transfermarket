@@ -57,7 +57,7 @@ public class TmMypageController {
 			}
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 			msg = "비밀번호 변경에 실패했습니다. 다시 시도해주세요.";
 		}
 		model.addAttribute("msg", msg);
@@ -83,7 +83,7 @@ public class TmMypageController {
 			}
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 		}
 		
 		return "mypage/update_member";
@@ -111,7 +111,7 @@ public class TmMypageController {
 			
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 			msg = "회원정보 변경에 실패했습니다. 다시 확인해주세요.";
 			url = "update_member.do";
 		}
@@ -150,7 +150,7 @@ public class TmMypageController {
 				}
 			}
 			catch(Exception e) {
-				e.printStackTrace();
+				System.out.println(e.getMessage());
 			}
 			model.addAttribute("msg", msg);
 			model.addAttribute("url", url);

@@ -38,7 +38,7 @@ public class RestSupportController {
 			return sendMap; 
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 			return null;
 		}
 	}
@@ -58,7 +58,7 @@ public class RestSupportController {
 			return sendMap; 
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 			return null;
 		}
 	}
@@ -84,7 +84,7 @@ public class RestSupportController {
 			return sendMap; 
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 			return null;
 		}
 	}
@@ -93,46 +93,54 @@ public class RestSupportController {
 	@RequestMapping(value = "/rest_insert_comment.json", 
 			method = {RequestMethod.GET, RequestMethod.POST}, 
 			produces="application/json")
-	public @ResponseBody int restInsertComment(Authentication auth,
+	public @ResponseBody Map<String, Object> restInsertComment(Authentication auth,
 			@RequestParam("no") int no,
 			@RequestParam("text") String text){
 		
+		Map<String, Object> sendMap = new HashMap<String, Object>();
+		try {
 			TmUserVO vo = (TmUserVO)auth.getPrincipal();
-			
-			Map<String, Object> sendMap = new HashMap<String, Object>();
 			sendMap.put("no", no);
 			sendMap.put("text", text);
 			sendMap.put("id", vo.getUsername());
 			
-			int ret = supportDAO.insertSupportComment(sendMap);
-			
-			return ret;
+			sendMap.put("ret", supportDAO.insertSupportComment(sendMap));
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			sendMap.put("ret", 0);
+		}
+			return sendMap;
 	}
 	
 	// 게시판 답댓글등록
 	@RequestMapping(value = "/rest_insert_recomment.json", 
 			method = {RequestMethod.GET, RequestMethod.POST}, 
 			produces="application/json")
-	public @ResponseBody int restInsertReComment(Authentication auth,
+	public @ResponseBody Map<String, Object> restInsertReComment(Authentication auth,
 			@RequestParam("supno") int supno,
 			@RequestParam("parno") int parno,
 			@RequestParam("parw") String parw,
 			@RequestParam("text") String text,
 			@RequestParam("depth") int depth){
 		
-		TmUserVO vo = (TmUserVO)auth.getPrincipal();
-		
 		Map<String, Object> sendMap = new HashMap<String, Object>();
-		sendMap.put("supno", supno);
-		sendMap.put("parno", parno);
-		sendMap.put("parw", parw);
-		sendMap.put("text", text);
-		sendMap.put("depth", depth+1);
-		sendMap.put("id", vo.getUsername());
-		
-		int ret = supportDAO.insertSupportReComment(sendMap);
-		
-		return ret;
+		try {
+			TmUserVO vo = (TmUserVO)auth.getPrincipal();
+			sendMap.put("supno", supno);
+			sendMap.put("parno", parno);
+			sendMap.put("parw", parw);
+			sendMap.put("text", text);
+			sendMap.put("depth", depth+1);
+			sendMap.put("id", vo.getUsername());
+			
+			sendMap.put("ret", supportDAO.insertSupportReComment(sendMap));
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			sendMap.put("ret", 0);
+		}
+		return sendMap;
 	}	
 	
 }

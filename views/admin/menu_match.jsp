@@ -15,6 +15,9 @@
 		
 		<table class="table table-dark table-bordered match_table" style="margin-top:30px">
 			<tr>
+				<td colspan="3"><input type="button" class="btn btn-light form-control" id="insert_match_btn" value="일정생성" /></td>
+			</tr>
+			<tr>
 				<th style="font-weight:bold; font-size:small;">대륙</th>
 				<th style="font-weight:bold; font-size:small;">국가</th>
 				<th style="font-weight:bold; font-size:small;">리그</th>
@@ -38,6 +41,26 @@
 						<option value="0">League</option>
 					</select>
 				</td>
+			</tr>
+			<tr>
+				<th style="font-weight:bold; font-size:small;">시즌 개막일</th>
+				<th style="font-weight:bold; font-size:small;">시즌 개막시간</th>
+				<th></th>
+			</tr>
+			<tr>
+				<td><input type="date" id="matchdate" class="form-control form-control-sm" /></td>
+				<td>
+					<select id="kickoff" class="form-control form-control-sm" >
+						<option value="0">개막시간</option>
+						<option value="03:00">03:00</option>
+						<option value="03:30">03:30</option>
+						<option value="05:00">05:00</option>
+						<option value="05:30">05:30</option>
+						<option value="20:00">20:00</option>
+						<option value="20:30">20:30</option>
+					</select>
+				</td>
+				<td></td>
 			</tr>
 		</table>
 		
@@ -113,6 +136,44 @@
 
 <script>
 $(function(){
+	
+	$('#insert_match_btn').click(function(){
+		var len = $('.club_no').length;
+		var clubno = new Array(len);
+		var leagueno = $('#leagueList').val();
+		var matchdate = $('#matchdate').val();
+		var kickoff = $('#kickoff').val();
+		if(len == 0){
+			alert('조회된 팀이 없어 경기일정을 생성할 수 없습니다.');
+			return false;
+		}
+		else {
+			clubno = [];
+			for(var i = 0; i < len; i++){
+				clubno[i] = $('.club_no').eq(i).val();
+			}
+			var obj = clubno.reduce(function(o, val, currentIndex) { 
+				o[currentIndex] = +val; 
+				return o; 
+				}, {});
+			$.post('rest_insert_match.json', {clubno : JSON.stringify(obj), leagueno : leagueno, matchdate : matchdate, kickoff : kickoff}, function(data){
+				if(data.ret > 0){
+					alert('일정이 생성되었습니다.');
+					window.location.reload();
+				}
+				else if(data.ret == 0){
+					alert('잔여일정이 남아있어 경기를 생성할 수 없습니다.');
+					window.location.reload();
+				}
+				else {
+					alert('일정 생성에 실패했습니다.');
+					window.location.reload();
+				}
+			},'json');
+		}
+	});
+	
+	
 	$('#continentList').change(function(){
 		var no = $(this).val();
 		if(no == 0){
@@ -149,6 +210,11 @@ $(function(){
 				$('#leagueList').append(
 					'<option value="0" selected disabled>리그를 선택하세요.</option>'		
 				);
+				if(len == 0){
+					alert('해당 국가에 소속된 클럽이 없습니다.');
+					$('#countryList').val('0').prop('selected', true);
+					return false;
+				}
 				for(var i = 0; i < len; i++){
 					$('#leagueList').append(
 						'<option value="' + data.leagueList[i].league_no + '">' + data.leagueList[i].league_name + '</option>'
@@ -166,9 +232,15 @@ $(function(){
 				$('#clubList_div').append(
 					'<tr>'+
 						'<td style="font-size:small;">' + ((i+1)*2-1) + '</td>'+
-						'<td><img src="${pageContext.request.contextPath}/img/club_img.do?no=' + data.clubList[i].club_no + '" style="margin-right:5px; width:18px; height:24px;" />' + data.clubList[i].club_name + '</td>'+
+						'<td>'+
+							'<input type="hidden" class="club_no" value="' + data.clubList[i].club_no + '" />' +
+							'<img src="${pageContext.request.contextPath}/img/club_img.do?no=' + data.clubList[i].club_no + '" style="margin-right:5px; width:18px; height:24px;" />' + data.clubList[i].club_name +
+						'</td>'+
 						'<td style="font-size:small;">' + ((i+1)*2) + '</td>'+
-						'<td><img src="${pageContext.request.contextPath}/img/club_img.do?no=' + data.clubList[i+3].club_no + '" style="margin-right:5px; width:18px; height:24px;" />' + data.clubList[i+3].club_name + '</td>'+
+						'<td>'+
+							'<input type="hidden" class="club_no" value="' + data.clubList[i+3].club_no + '" />' +
+							'<img src="${pageContext.request.contextPath}/img/club_img.do?no=' + data.clubList[i+3].club_no + '" style="margin-right:5px; width:18px; height:24px;" />' + data.clubList[i+3].club_name +
+						'</td>'+
 					'</tr>'
 				);
 			}

@@ -100,4 +100,14 @@ public class TmSupportDAO {
 		return sqlsession.insert("tm_support.insert_support_recomment", map);
 	}
 	
+	// 게시판 글수정
+	public int updateSupportOne(Map<String, Object> map) {
+		return sqlsession.update("tm_support.update_support_one", map);
+	}
+	
+	// 게시판 글삭제
+	public int deleteSupportOne(Map<String, Object> map) {
+		return sqlsession.update("tm_support.delete_support_one", map);
+	}
+	
 }

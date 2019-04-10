@@ -39,7 +39,7 @@ public class TmImgController {
 			return new ResponseEntity<byte[]>(img, headers, HttpStatus.OK);
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 			return null;
 		}
 	}
@@ -62,7 +62,7 @@ public class TmImgController {
 			return new ResponseEntity<byte[]>(img, headers, HttpStatus.OK);
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 			return null;
 		}
 	}
@@ -85,7 +85,7 @@ public class TmImgController {
 			return new ResponseEntity<byte[]>(img, headers, HttpStatus.OK);
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 			return null;
 		}
 	}
@@ -108,7 +108,7 @@ public class TmImgController {
 			return new ResponseEntity<byte[]>(img, headers, HttpStatus.OK);
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 			return null;
 		}
 	}
@@ -131,7 +131,7 @@ public class TmImgController {
 			return new ResponseEntity<byte[]>(img, headers, HttpStatus.OK);
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 			return null;
 		}
 	}
@@ -154,7 +154,7 @@ public class TmImgController {
 			return new ResponseEntity<byte[]>(img, headers, HttpStatus.OK);
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 			return null;
 		}
 	}	
@@ -177,7 +177,7 @@ public class TmImgController {
 			return new ResponseEntity<byte[]>(img, headers, HttpStatus.OK);
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 			return null;
 		}
 	}
@@ -200,7 +200,7 @@ public class TmImgController {
 			return new ResponseEntity<byte[]>(img, headers, HttpStatus.OK);
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 			return null;
 		}
 	}

@@ -35,7 +35,7 @@ public class TmChatController {
 			model.addAttribute("member", chatDAO.selectTmMember(sendMap));
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 		}
 		return "chat/member_info";
 	}
@@ -56,7 +56,7 @@ public class TmChatController {
 			model.addAttribute("topic", sendMap);
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 		}
 		return "chat/chat_user_to_user";
 	}

@@ -26,14 +26,18 @@
 		<thead>
 			<tr>
 				<th colspan="4">
-					<sec:authorize access="isAnonymous()">
-						<a href="insert.do" id="insert_support_login" class="btn btn-outline-light btn-sm">글쓰기</a>
-					</sec:authorize>
-					
-					<sec:authorize access="isAuthenticated()">
-						<a href="insert.do" class="btn btn-outline-light btn-sm">글쓰기</a>
-						<input type="button" class="btn btn-outline-light btn-sm" style="margin-left:10px;" id="my_support" value="내가 쓴 글" />
-					</sec:authorize>
+					<div class="form-inline">
+						<sec:authorize access="isAnonymous()">
+							<a href="insert.do" id="insert_support_login" class="btn btn-outline-light btn-sm">글쓰기</a>
+						</sec:authorize>
+						<sec:authorize access="isAuthenticated()">
+							<a href="insert.do" class="btn btn-outline-light btn-sm">글쓰기</a>
+							<div style="width:20px"></div>
+							<input type="button" class="btn btn-outline-light btn-sm" id="my_support" value="내가 쓴 글" />
+							<div style="width:20px"></div>
+							<a href="main.do" class="btn btn-outline-light btn-sm form-control form-control-sm">검색 초기화</a>
+						</sec:authorize>
+					</div>
 				</th>
 			</tr>
 			<tr>
@@ -56,8 +60,6 @@
 							<input type="text" id="search_text" name="text" class="form-control form-control-sm" style="width:250px"/>
 						<div style="width:10px"></div>
 						<input type="button" id="search_btn" class="btn btn-outline-light btn-sm form-control form-control-sm" value="검색" />
-						<div style="width:10px"></div>
-						<a href="main.do" class="btn btn-outline-light btn-sm form-control form-control-sm">검색 초기화</a>
 					</div>
 				</th>
 			</tr>
@@ -91,21 +93,30 @@ $(function(){
 			$.post('rest_supportlist_page.json', {page : page}, function(data){
 				$('#search_support_tbody').empty();
 				var len = data.supportList.length;
-				for(var i = 0; i < len; i++){
+				if(len == 0){
 					$('#search_support_tbody').append(
-							'<tr>'+
-								'<td style="text-align:center;">' + data.supportList[i].support_no + '</td>'+
-								'<td style="text-align:center;">' + data.supportList[i].category_name + '</td>'+
-								'<td>'+
-									'<a href="${pageContext.request.contextPath}/support/select.do?no=' + data.supportList[i].support_no + '">'+
-										'<span style="margin-left:30px">' + data.supportList[i].support_title + '</span>'+
-									'</a>'+
-								'</td>'+
-								'<td style="text-align:center;">' + data.supportList[i].support_writer + '</td>'+
-								'<td style="text-align:center;">' + data.supportList[i].support_date + '</td>'+
-								'<td style="text-align:center;">' + data.supportList[i].support_hit + '</td>'+
-							'</tr>'		
+						'<tr>'+
+							'<td colspan="6" style="font-size:large; font-weight:bold; text-align:center;">등록된 게시글이 없습니다.</td>'+
+						'</tr>'
 					);
+				}
+				else{
+					for(var i = 0; i < len; i++){
+						$('#search_support_tbody').append(
+								'<tr>'+
+									'<td style="text-align:center;">' + data.supportList[i].support_no + '</td>'+
+									'<td style="text-align:center;">' + data.supportList[i].category_name + '</td>'+
+									'<td>'+
+										'<a href="${pageContext.request.contextPath}/support/select.do?no=' + data.supportList[i].support_no + '">'+
+											'<span style="margin-left:30px">' + data.supportList[i].support_title + '</span>'+
+										'</a>'+
+									'</td>'+
+									'<td style="text-align:center;">' + data.supportList[i].support_writer + '</td>'+
+									'<td style="text-align:center;">' + data.supportList[i].support_date + '</td>'+
+									'<td style="text-align:center;">' + data.supportList[i].support_hit + '</td>'+
+								'</tr>'		
+						);
+					}
 				}
 			});
 		}

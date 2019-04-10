@@ -20,10 +20,10 @@
 
 <div style="height:20px"></div>
 <div class="container">
-	<form id="support_insert_form" action="insert.do" method="post">
+	<form id="support_update_form" action="update.do" method="post">
 		<table class="table table-dark table-bordered">
 			<tr>
-				<th colspan="2"><h4 style="text-align: center;">게시판 글쓰기</h4></th>
+				<th colspan="2"><h4 style="text-align: center;">글 수정</h4></th>
 			</tr>
 			<tr>
 				<td style="width:10%;">카테고리</td>
@@ -31,41 +31,46 @@
 					<select class="form-control form-control-sm" id="category" name="category" style="width:250px">
 						<option value="0">카테고리</option>
 						<c:forEach var="category" items="${category}">
-							<option value="${category.category_no}">${category.category_name}</option>
+							<option value="${category.category_no}" ${support.support_category == category.category_no ? 'selected' : ''}>${category.category_name}</option>
 						</c:forEach>
 					</select>
 				</td>
 			</tr>
 			<tr>
-				<td style="width:10%;">작성자</td>
+				<td style="width:10%;">글번호</td>
 				<td style="font-weight:bold;">
-					<input type="text" class="form-control form-control-sm" value="${sec_id}" style="background-color:white;" readonly/>
+					<input type="text" class="form-control form-control-sm" id="no" name="no" style="background-color:white;" value="${support.support_no}" readonly />
 				</td>
 			</tr>
 			<tr>
 				<td style="width:10%;">제목</td>
 				<td style="font-weight:bold;">
-					<input type="text" class="form-control form-control-sm" id="title" name="title" placeholder="제목을 입력하세요." />
+					<input type="text" class="form-control form-control-sm" id="title" name="title" placeholder="제목을 입력하세요." value="${support.support_title}"/>
 				</td>
 			</tr>
 			<tr>
-				<td style="width:10%; height:300px;">내용</td>
-				<td style="font-size:medium;">
-					<textarea class="form-control form-control-sm" id="content" name="content" placeholder="내용을 입력하세요." style="height:300px; resize:none;"></textarea>
+				<td style="width:10%;">작성자</td>
+				<td style="font-weight:bold;">
+					<input type="text" class="form-control form-control-sm" style="background-color:white;"  value="${support.support_writer}" readonly />
 				</td>
 			</tr>
 			<tr>
-				<td><a href="main.do" class="btn btn-outline-light form-control">취소</a></td>
-				<td><input type="button" class="btn btn-outline-light form-control" id="support_insert_btn" value="등록" /></td>
-			</tr>
+					<td style="width:10%; height:300px;">내용</td>
+					<td style="font-size:medium;">
+						<textarea class="form-control form-control-sm" id="content" name="content" placeholder="내용을 입력하세요." style="height:300px; resize:none;">${support.support_content}</textarea>
+					</td>
+				</tr>
+				<tr>
+					<td><a href="main.do" class="btn btn-outline-light form-control">취소</a></td>
+					<td><input type="button" class="btn btn-outline-light form-control" id="support_update_btn" value="등록" /></td>
+				</tr>
 		</table>
 	</form>
 </div>
 
 <script>
 $(function(){
-	// 등록
-	$('#support_insert_btn').click(function(){
+	$('#support_update_btn').click(function(){
 		var cate = $('#category').val();
 		var title = $('#title').val();
 		var text = $('#content').val();
@@ -82,11 +87,11 @@ $(function(){
 			return false;
 		}
 		else{
-			$('#support_insert_form').submit();
+			$('#support_update_form').submit();
 		}
 	});
+	
 });
 </script>
-
 </body>
 </html>	

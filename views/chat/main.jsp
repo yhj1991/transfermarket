@@ -31,6 +31,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js" type="text/javascript"></script>
 <script>
+$('#txt').focus();
 var client;
 function setup(h,p,c){
 	client = new Paho.MQTT.Client(h,p,c);
@@ -49,7 +50,9 @@ function myConnectionLost(obj){
 
 function myMessageArrived(obj){
 	console.log('messageArrived', obj);
-	
+	if(true){
+		window.open("chat_user_to_user.do?id1=${id}&id2=" + id, "test", "width=400,height=400");
+	}
 	var idx_in = obj.destinationName.lastIndexOf('server/in');
 	var idx_out = obj.destinationName.lastIndexOf('server/out');
 	
@@ -103,6 +106,8 @@ $(function(){
 		message = new Paho.MQTT.Message(msg);
 		message.destinationName = "ds/class603/main/${id}";
 		client.send(message);
+		$('#txt').val('');
+		$('#txt').focus();
 	});
 });
 
@@ -116,12 +121,12 @@ $(document).on('click', '.menu2', function(){
 	var idx = $(this).index('.menu2');
 	var id = $('.chat_users').eq(idx).text();
 	var user = '${id}';
-	if(user == id){
-		var msg = '<a href="chat_user_to_user.do" style="color:black;">1:1 대화요청이 왔습니다.</a>';
-		message = new Paho.MQTT.Message(msg);
-		message.destinationName = "ds/class603/main/server";
-		client.send(message);
-	}
+	// if(user == id){
+	var msg = '<a href="chat_user_to_user.do" style="color:black;">1:1 대화요청이 왔습니다.</a>';
+	message = new Paho.MQTT.Message(msg);
+	message.destinationName = "ds/class603/main/server";
+	client.send(message);
+	// }
 	window.open("chat_user_to_user.do?id1=${id}&id2=" + id, "test", "width=400,height=400");	
 });
 

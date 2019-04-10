@@ -30,6 +30,7 @@
 </sec:authorize>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js" type="text/javascript"></script>
 <script>
+$('#txt').focus();
 var client;
 var topic = '<c:out value="${topic.topic}" />';
 function setup(h,p,c){
@@ -108,6 +109,8 @@ $(function(){
 		message = new Paho.MQTT.Message(msg);
 		message.destinationName = 'ds/class603/' + topic + '/${id}';
 		client.send(message);
+		$('#txt').val('');
+		$('#txt').focus();
 	});
 });
 </script>

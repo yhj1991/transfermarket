@@ -23,6 +23,8 @@
 				tm_support_category b
 		ON
 				a.support_category = b.category_no
+		WHERE
+				support_del = 1
 		ORDER BY
 				support_no DESC
 		LIMIT
@@ -35,6 +37,8 @@
 				COUNT(support_no)
 		FROM
 				tm_support
+		WHERE
+				support_del = 1
 	</select>
 	
 	<!-- 게시판 내가쓴글 -->
@@ -49,13 +53,14 @@
 		ON
 				a.support_category = b.category_no
 		WHERE
-				support_writer = #{id}
+				support_writer = #{id} AND support_del = 1
 		ORDER BY
 				a.support_no DESC
 		LIMIT
 				${page}, 15
 	</select>
 	
+	<!-- 내가 쓴 글 totpage -->
 	<select id="select_mysupport_totpage" parameterType="map" resultType="int">
 		SELECT
 				COUNT(a.support_no)
@@ -66,7 +71,7 @@
 		ON
 				a.support_category = b.category_no
 		WHERE
-				support_writer = #{id}
+				support_writer = #{id} AND support_del = 1
 		ORDER BY
 				a.support_no DESC
 	</select>
@@ -87,8 +92,8 @@
 	</resultMap>
 	<select id="select_support_one" parameterType="map" resultMap="select_support_one_map">
 		SELECT
-				a.support_no, a.support_category, a.support_title, a.support_content, a.support_writer, DATE_FORMAT(support_date, '%Y-%m-%d %H:%i:%s') support_date,
-				a.support_hit, b.category_name 
+				a.support_no, a.support_category, a.support_title, a.support_content, a.support_writer,
+				DATE_FORMAT(support_date, '%Y-%m-%d %H:%i:%s') support_date, a.support_hit, b.category_name 
 		FROM
 				tm_support a
 		INNER JOIN
@@ -96,7 +101,7 @@
 		ON
 				a.support_category = b.category_no
 		WHERE
-				support_no = #{no}
+				support_no = #{no} AND support_del = 1
 	</select>
 	
 	<!-- 게시판 이전글 -->
@@ -106,7 +111,7 @@
 		FROM
 				tm_support
 		WHERE
-				support_no <![CDATA[<]]> #{no}
+				support_no <![CDATA[<]]> #{no} AND support_del = 1
 	</select>
 	
 	<!-- 게시판 다음글 -->
@@ -116,7 +121,7 @@
 		FROM
 				tm_support
 		WHERE
-				support_no <![CDATA[>]]> #{no}
+				support_no <![CDATA[>]]> #{no} AND support_del = 1
 	</select>
 	
 	<!-- 게시판 글쓰기 -->
@@ -138,6 +143,7 @@
 		ON
 				a.support_category = b.category_no
 		WHERE
+				support_del = 1 AND 
 				<if test="category > 0">support_category = #{category} AND </if>
 				<choose>
 					<when test="type eq 'support_t_c'">(support_title LIKE '%${text}%' OR support_content LIKE '%${text}%')</when>
@@ -157,6 +163,7 @@
 		ON
 				a.support_category = b.category_no
 		WHERE
+				support_del = 1 AND 
 				<if test="category > 0">support_category = #{category} AND </if>
 				<choose>
 					<when test="type eq 'support_t_c'">(support_title LIKE '%${text}%' OR support_content LIKE '%${text}%')</when>
@@ -191,5 +198,25 @@
 		VALUES
 				(#{supno}, #{text}, #{id}, #{parno}, #{parw}, #{depth})
 	</insert>
+	
+	<!-- 게시판 글수정 -->
+	<update id="update_support_one" parameterType="map">
+		UPDATE
+				tm_support
+		SET
+				support_content = #{content}, support_title = #{title}, support_category = #{category}
+		WHERE
+				support_no = #{no}
+	</update>
+	
+	<!-- 게시판 글삭제 -->
+	<update id="delete_support_one" parameterType="map">
+		UPDATE
+				tm_support
+		SET
+				support_del = 0
+		WHERE
+				support_no = #{no}
+	</update>
 	
 </mapper>

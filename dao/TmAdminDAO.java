@@ -36,7 +36,6 @@ public class TmAdminDAO {
 		return sqlsession.selectList("tm_admin.select_player_clublist", map);
 	}
 	
-	
 	// 관리자 페이지 선수등록
 	public int insertPlayer(Map<String, Object> map) {
 		return sqlsession.insert("tm_admin.insert_player", map);
@@ -136,6 +135,16 @@ public class TmAdminDAO {
 	// 관리자페이지 경기일정관리 (챔피언스리그 그룹별 클럽)
 	public List<Map<String, Object>> selectRestChampsGroupClubList(Map<String, Object> map) {
 		return sqlsession.selectList("tm_admin.select_rest_champs_group_clublist", map);
+	}
+	
+	// 관리자페이지 경기일정관리 잔여경기수
+	public int selectMatch(Map<String, Object> map) {
+		return sqlsession.selectOne("tm_admin.select_match", map);
+	}
+	
+	// 관리자페이지 경기일정관리 일정생성
+	public int insertMatch(Map<String, Object> map) {
+		return sqlsession.insert("tm_admin.insert_match", map);
 	}
 	
 	// 관리자 페이지 리그관리 리그리스트

@@ -16,21 +16,35 @@
 }
 </style>
 
+<sec:authorize access="isAuthenticated()">
+	<sec:authentication property="principal.username" var="sec_id" />
+</sec:authorize>
+
 <div style="height:20px"></div>
 <div class="container">
-	<table class="table table-sm table-dark table-bordered">
+	<table class="table table-dark table-bordered">
 		<tr>
 			<th colspan="2"><h4 style="text-align: center;">${support.support_title}</h4></th>
 		</tr>
 		<tr>
 			<td colspan="2">
-				<a href="main.do" class="btn btn-outline-light btn-sm" style="margin-right:10px;">메인</a>
-				<c:if test="${prev != 0}">
-					<a href="${pageContext.request.contextPath}/support/select.do?no=${prev}" class="btn btn-outline-light btn-sm" style="margin-right:5px;">이전글</a>
-				</c:if>
-				<c:if test="${next != 0}">
-					<a href="${pageContext.request.contextPath}/support/select.do?no=${next}" class="btn btn-outline-light btn-sm">다음글</a>
-				</c:if>
+				<div class="row form-inline">
+					<div class="col">
+						<a href="main.do" class="btn btn-outline-light btn-sm" style="margin-right:10px;">게시판 홈</a>
+						<c:if test="${prev != 0}">
+							<a href="${pageContext.request.contextPath}/support/select.do?no=${prev}" class="btn btn-outline-light btn-sm" style="margin-right:5px;">이전글</a>
+						</c:if>
+						<c:if test="${next != 0}">
+							<a href="${pageContext.request.contextPath}/support/select.do?no=${next}" class="btn btn-outline-light btn-sm">다음글</a>
+						</c:if>
+					</div>
+					<div class="col" align="right">
+						<c:if test="${sec_id eq support.support_writer}">
+							<a href="${pageContext.request.contextPath}/support/update.do?no=${support.support_no}" class="btn btn-outline-light btn-sm">수정</a>
+							<a href="${pageContext.request.contextPath}/support/delete.do?no=${support.support_no}" class="btn btn-outline-light btn-sm" style="margin-left:10px" onclick="confirm('정말 삭제하시겠습니까?')">삭제</a>
+						</c:if>
+					</div>
+				</div>
 				<div style="height:30px;"></div>
 			</td>
 		</tr>
@@ -79,35 +93,43 @@
 			</tr>
 		</thead>
 		<tbody id="comment_tbody">
-			<c:if test="${empty commentList}">
+			<c:if test="${empty comment}">
 				<tr>
 					<td colspan="2" style="border:none; border-top:none; padding-left:15px; padding-bottom:10px">등록된 댓글이 없습니다. 댓글을 등록해보세요.</td>
 				</tr>
 			</c:if>
-			<c:if test="${!empty commentList}">
-			<c:forEach var="comment" items="${commentList}">
+			<c:if test="${!empty comment}">
+			<c:forEach var="comment" items="${comment}">
 				<tr>
 					<td colspan="2">
 						<table class="table table-borderless table-dark comment_table" style="margin:auto; table-layout:fixed;">
-							<tr style="height:30px">
+							<tr>
 								<td colspan="2" style="padding-bottom:0px; padding-top:0px">
+									${comment.comment_depth > 0 ? '&nbsp;&nbsp;└>':''}
 									<input type="hidden" class="comment_no" value="${comment.comment_no}" />
 									<input type="hidden" class="comment_depth" value="${comment.comment_depth}" />
-									<span style="font-size:large; font-weight:bold;" class="comment_writer">${comment.comment_writer}</span>
+									<span style="font-weight:bold;" class="comment_writer">${comment.comment_writer}</span>
 									<span style="margin-left:10px;">${comment.comment_date}</span>
-									<span style="margin-left:10px;">
-										<a href="#" class="recomment_btn">답댓글</a>
-										<sec:authentication property="principal.username" var="sec_id" />
-										<c:if test="${sec_id eq comment.comment_writer}">
-											/ <a href="#" class="recomment_update_btn">수정</a>
-											/ <a href="#" class="recomment_delete_btn">삭제</a>
-										</c:if>
-									</span>
+									<sec:authorize access="isAuthenticated()">
+										<span style="margin-left:10px;">
+											<a href="#" class="recomment_btn">답댓글</a>
+											<c:if test="${sec_id eq comment.comment_writer}">
+												/ <a href="#" class="recomment_update_btn">수정</a>
+												/ <a href="#" class="recomment_delete_btn">삭제</a>
+											</c:if>
+										</span>
+									</sec:authorize>
 								</td>
 							</tr>
 							<tr>
 								<td colspan="2" style="overflow:hidden; word-wrap:break-word;">
-									${comment.comment_text}
+								<c:if test="${comment.comment_depth == 0}">
+									<span>${comment.comment_text}</span>
+								</c:if>
+								<c:if test="${comment.comment_depth > 0}">
+									<span style="font-weight:bold; margin-left:28px;">${comment.parent_writer}</span>
+									<span style="margin-left:10px;">${comment.comment_text}</span>
+								</c:if>
 								</td>
 							</tr>
 						</table>
@@ -133,6 +155,8 @@
 
 <script>
 $(function(){
+	
+	// 비로그인 댓글쓰기 클릭
 	$('#comment_text1').click(function(){
 		var yes = confirm('로그인이 필요한 기능입니다. 로그인하시겠습니까?');
 		if(yes){
@@ -143,6 +167,7 @@ $(function(){
 		}
 	});
 	
+	// 댓글등록
 	$(document).on('click', '#comment_insert_btn', function(){
 		var no = $('#support_no').text();
 		var text = $('#comment_text2').val();
@@ -152,14 +177,15 @@ $(function(){
 		}
 		else{
 			$.post('rest_insert_comment.json', {no:no, text:text}, function(data){
-				if(data == 1){
+				if(data.ret == 1){
 					alert('댓글이 등록되었습니다.');
 					window.location.reload();
 				}
-			}); 
+			},'json'); 
 		}
 	});
 	
+	// 답댓글
 	$(document).on('click', '.recomment_btn', function(){
 		event.preventDefault();
 		$('#recomment_insert_btn').parent().parent().remove();
@@ -175,31 +201,29 @@ $(function(){
 				'</td>'+
 			'</tr>'
 		);
-	});
-	
-	$(document).on('click', '#recomment_insert_btn', function(){
-		event.preventDefault();
-		var supno = $('#support_no').text();
-		var text = $('#recomment_text').val();
-		var parno = $('.comment_no').eq(idx).val();
-		var parw = $('.comment_writer').eq(idx).text();
-		var depth = $('.comment_depth').eq(idx).val();
 		
-		/* 
-		$.post('rest_insert_recomment.json', {supno : supno, text : text, parno : parno, parw : parw, depth : depth}, function(data){
-			if(data == 1){
-				alert('댓글이 등록되었습니다.');
-				window.location.reload();
-			}
-		},'json');
-		 */
+		// 답댓글 등록
+		$(document).on('click', '#recomment_insert_btn', function(){
+			event.preventDefault();
+			var supno = $('#support_no').text();
+			var text = $('#recomment_text').val();
+			var parno = $('.comment_no').eq(idx).val();
+			var parw = $('.comment_writer').eq(idx).text();
+			var depth = $('.comment_depth').eq(idx).val();
+			$.post('rest_insert_recomment.json', {supno : supno, text : text, parno : parno, parw : parw, depth : depth}, function(data){
+				if(data == 1){
+					alert('댓글이 등록되었습니다.');
+					window.location.reload();
+				}
+			},'json');
+		});
+		
+		// 답댓글 취소
+		$(document).on('click', '#recomment_close_btn', function(){
+			event.preventDefault();
+			$(this).parent().parent().remove();
+		});
 	});
-	
-	$(document).on('click', '#recomment_close_btn', function(){
-		event.preventDefault();
-		$(this).parent().parent().remove();
-	});
-	
 	
 });
 </script>

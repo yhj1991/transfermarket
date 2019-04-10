@@ -36,7 +36,7 @@ public class TmDetailController {
 			model.addAttribute("continentList", detailDAO.selectDetailContinent(sendMap));
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 		}
 		return "detail/continent_detail";
 	}
@@ -55,7 +55,7 @@ public class TmDetailController {
 			model.addAttribute("league", detailDAO.selectDetailLeague(sendMap));
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 		}
 		return "detail/league_detail";
 	}
@@ -77,7 +77,7 @@ public class TmDetailController {
 			model.addAttribute("info", detailDAO.selectDetailClubInfo(sendMap));
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 		}
 		return "detail/club_detail";
 	}
@@ -100,7 +100,7 @@ public class TmDetailController {
 			model.addAttribute("player", detailDAO.selectDetailPlayer(sendMap));
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 		}
 		return "detail/player_detail";
 	}
@@ -122,7 +122,7 @@ public class TmDetailController {
 			model.addAttribute("info", detailDAO.selectDetailMatchClubsInfo(sendMap));
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 		}
 		return "detail/match_detail";
 	}
@@ -142,7 +142,7 @@ public class TmDetailController {
 			model.addAttribute("clubs", detailDAO.selectDetailChampsMatchClubs(sendMap));
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 		}
 		return "detail/champs_match_detail";
 	}

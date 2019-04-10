@@ -3,6 +3,7 @@ package com.tm.restcontroller;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tm.dao.TmAdminDAO;
+import com.tm.function.TmMatch;
 
 @RestController
 @RequestMapping("/admin")
@@ -35,7 +37,7 @@ public class RestAdminController {
 			return jsonMap;
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 			return null;
 		}
 		
@@ -58,7 +60,7 @@ public class RestAdminController {
 			return jsonMap;
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 			return null;
 		}
 	}
@@ -110,7 +112,7 @@ public class RestAdminController {
 			return sendMap;
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 			return null;
 		}
 	}
@@ -129,7 +131,7 @@ public class RestAdminController {
 			return sendMap;
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 			return null;
 		}
 		
@@ -152,7 +154,7 @@ public class RestAdminController {
 			return sendMap;
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 			return null;
 		}
 	}
@@ -171,7 +173,7 @@ public class RestAdminController {
 			return sendMap;
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 			return null;
 		}
 		
@@ -194,9 +196,44 @@ public class RestAdminController {
 			return sendMap;
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 			return null;
 		}
 	}
 	
+	// 일정생성
+	@RequestMapping(value = "/rest_insert_match.json",
+							method = {RequestMethod.GET, RequestMethod.POST},
+							produces = "application/json")
+	public @ResponseBody Map<String, Object> restInsertMatch(
+			@RequestParam(value = "clubno") String clubno,
+			@RequestParam(value = "leagueno") int leagueno,
+			@RequestParam(value = "matchdate") String matchdate,
+			@RequestParam(value = "kickoff") String kickoff){
+		
+		
+		Map<String, Object> sendMap = new HashMap<String, Object>();	
+		JSONObject jobj = new JSONObject(clubno);
+		try {
+			TmMatch.createMatch(jobj, matchdate, kickoff);
+			sendMap.put("league", leagueno);
+			int cnt = adminDAO.selectMatch(sendMap);
+			System.out.println(cnt);
+			if(cnt == 0) {
+				sendMap.put("kickoff", TmMatch.getKickoffList());
+				sendMap.put("home", TmMatch.getHomeList());
+				sendMap.put("away", TmMatch.getAwayList());
+				sendMap.put("matchdate", TmMatch.getDateList());
+				sendMap.put("ret", adminDAO.insertMatch(sendMap));
+			}
+			else {
+				sendMap.put("ret", 0);
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			sendMap.put("ret", -1);
+		}
+		return sendMap;
+	}
 }

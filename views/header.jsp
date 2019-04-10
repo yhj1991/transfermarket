@@ -40,16 +40,13 @@
 			<a href="${pageContext.request.contextPath}/logout.do" class="form-inline" style="font-size:small; margin-right:15px; color:white;">로그아웃</a>
 			<a href="${pageContext.request.contextPath}/mypage/main.do" class="form-inline" style="font-size:small; margin-right:15px; color:white;">마이페이지</a>
 		</sec:authorize>
-		
+		<a href="${pageContext.request.contextPath}/suggest.do" class="form-inline" style="font-size:small; margin-right:15px; color:white;">정보수정</a>
 		<a href="${pageContext.request.contextPath}/support/main.do" class="form-inline" style="font-size:small; margin-right:15px; color:white;">게시판</a>
 		
 		<sec:authorize access="hasRole('ROLE_ADMIN')">
 		<a href="${pageContext.request.contextPath}/admin/main.do" class="form-inline" style="font-size:small; margin-right:15px; color:white;">관리자페이지</a>
 		</sec:authorize>
-		
-		<%-- 
 		<a href="${pageContext.request.contextPath}/chat/main.do" class="form-inline" style="font-size:small; margin-right:15px; color:white;">채팅페이지</a>
-		 --%>
 	</div>
 </div>
 

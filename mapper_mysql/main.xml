@@ -4,6 +4,103 @@
 
 <mapper namespace="tm_main">
 
+	<!-- 업데이트 할 경기조회 -->
+	<select id="select_update_match_result" resultType="map">
+		SELECT
+					match_no, match_home, match_away
+			FROM
+					tm_match
+			WHERE
+					match_end = 1
+					AND 
+					CONCAT(match_date,' ', match_kickoff) <![CDATA[<]]> CONCAT((SELECT DATE_FORMAT(now(), '%Y-%m-%d')), ' ',(SELECT DATE_FORMAT(now(), '%H:%i')))
+	</select> 
+
+	<!-- 경기결과 업데이트 -->
+	<update id="update_match_result" parameterType="map">
+		<foreach open="" close="" separator=";" collection="match" item="match" index="idx">
+		UPDATE
+				tm_match
+		SET
+				match_end = 0, match_win = #{win[${idx}]}
+		WHERE
+				match_no = #{match}
+		</foreach>
+	</update>
+	
+	<!-- 경기결과 업데이트 경기별 클럽 선수조회 -->
+	<select id="select_point_playerlist" parameterType="int" resultType="map">
+		SELECT #{match} match_no, player_no
+		FROM tm_player
+		WHERE club_no = #{club}
+	</select>	
+	
+	<!-- 경기결과 업데이트 경기별 득점/도움 선수조회 -->
+	<select id="select_point_player" parameterType="int" resultType="map">
+	    (SELECT #{match} match_no, player_no
+		FROM tm_player
+		WHERE club_no = #{club}
+		ORDER BY rand()
+		LIMIT 
+			<choose>
+				<when test="point%2 == 1">${point/2+1}</when>
+				<when test="point%2 == 0">${point/2}</when>
+			</choose>
+		)
+		UNION ALL
+		(SELECT #{match} match_no, player_no
+		FROM tm_player
+		WHERE club_no = #{club}
+		ORDER BY rand()
+		LIMIT ${point/2})
+	</select>
+	
+	<!-- 경기결과 업데이트 경기별 클럽 전체 선수리스트 -->
+	<insert id="insert_point_playerlist" parameterType="map" useGeneratedKeys="false">
+		INSERT INTO
+				tm_point(match_no, player_no)
+		SELECT
+				a.*
+		FROM
+				(
+				<foreach open="" close="" separator="UNION ALL" collection="match" item="match" index="idx">
+					SELECT
+							#{match} match_no, player_no
+					FROM
+							tm_player
+					WHERE
+							club_no IN (#{home[${idx}]}, #{away[${idx}]})	
+				</foreach>
+				) a
+	</insert>
+	
+	<!-- 경기결과 업데이트 득점/도움 선수업데이트 -->
+	<update id="update_point_player" parameterType="map">
+		UPDATE
+				tm_point
+		SET
+				${type} = ${type} + 1
+		WHERE
+				match_no = #{player.match_no} AND player_no = #{player.player_no}
+	</update>
+	<!--
+	한번에 업데이트 ( 중복값 업데이트 안됨) 
+	<update id="update_point_player" parameterType="map">
+		UPDATE
+				tm_point
+		SET
+				${type} = ${type} + 1
+		WHERE
+				match_no IN
+				<foreach open="(" close=")" separator="," collection="player" item="tmp" index="idx">
+				 #{tmp.match_no}
+				</foreach>
+				AND player_no IN
+				<foreach open="(" close=")" separator="," collection="player" item="tmp" index="idx">
+				 #{tmp.player_no}
+				</foreach>
+	</update>
+	 -->
 	<!-- 로그인 -->
 	<select id="select_member_login" parameterType="map" resultType="map">
 		SELECT
@@ -1184,6 +1281,26 @@
 				aa.champs_group = #{group}                
 		ORDER BY
 				vp DESC, win DESC, draw DESC
+	</select>
+	
+	<!-- 정보수정 선수 -->
+	<select id="select_player_list" resultType="map">
+		SELECT
+				player_no, country_no, club_no, player_name, player_backnum, player_birth, player_age, player_height, player_position1, player_position2, player_foot
+		FROM
+				tm_player
+	</select>
+	
+	<!-- 정보수정 클럽 -->
+	<select id="select_player_club" resultType="map">
+		SELECT
+				b.country_no, b.country_name, b.league_no, b.league_name, a.club_no, a.club_name, a.club_addr, a.club_tel, a.club_fax, a.club_page, a.club_stadium, a.club_founded
+		FROM
+				tm_club a
+		INNER JOIN
+				tm_view_league b
+		ON
+				a.league_no = b.league_no
 	</select>
 
 </mapper>

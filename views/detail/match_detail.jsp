@@ -104,7 +104,7 @@
 					<td style="width:40%">
 						<table class="table table-dark table-sm table-borderless">
 							<tr>
-								<td><span style="font-size:large; font-weight:bold;">${info.coach[0].coach_name}</span></td>
+								<td><span class="small_span" style="font-weight:bold;">${info.coach[0].coach_name}</span></td>
 							</tr>
 							<tr>
 								<td><img src="${pageContext.request.contextPath}/img/country_img.do?no=${info.coach[0].country_no}" style="width:24px; height:16px"/><span style="margin-left:5px; font-size:small;">${info.coach[0].country_name}</span></td>
@@ -134,7 +134,7 @@
 					<td style="width:40%">
 						<table class="table table-dark table-sm table-borderless">
 							<tr>
-								<td><span style="font-size:large; font-weight:bold;">${info.coach[1].coach_name}</span></td>
+								<td><span class="small_span" style="font-weight:bold;">${info.coach[1].coach_name}</span></td>
 							</tr>
 							<tr>
 								<td><img src="${pageContext.request.contextPath}/img/country_img.do?no=${info.coach[1].country_no}" style="width:24px; height:16px"/><span style="margin-left:5px; font-size:small;">${info.coach[1].country_name}</span></td>

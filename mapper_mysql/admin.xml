@@ -433,6 +433,36 @@
 				a2.club_no = b.club_no
 	</select>
 	
+	<!-- 관리자페이지 경기일정관리 잔여경기수 -->
+	<select id="select_match" parameterType="map" resultType="int">
+		SELECT
+				COUNT(match_no) cnt
+		FROM
+				tm_match
+		WHERE
+				match_end = 1 AND league_no = #{league}
+	</select>
+	
+	<!-- 관리자페이지 경기일정관리 일정생성 -->
+	<insert id="insert_match" parameterType="map" useGeneratedKeys="false">
+		INSERT INTO
+				tm_match(league_no, match_date, match_kickoff, match_home, match_away)
+		VALUES
+			<foreach open="" close="" separator="," index="idx" collection="home" item="home">
+				(#{league}, #{matchdate[${idx}]}, #{kickoff[${idx}]}, #{home}, #{away[${idx}]})
+			</foreach>
+	</insert>
+	
+	<!-- 관리자페이지 경기일정관리 일정생성 (선수기록) -->
+	<insert id="insert_point_player" parameterType="map" useGeneratedKeys="false">
+		INSERT INTO
+				tm_point(match_no, player_no)
+		VALUES
+				<foreach open="" close="" separator="," index="idx" collection="match" item="match">
+				(#{match}, #{player_no[${idx}]})
+				</foreach>
+	</insert>
+	
 	<!-- 관리자페이지 선수관리 선수목록 totpage -->
 	<select id="select_all_playerlist_totpage" resultType="int">
 		SELECT

@@ -136,7 +136,7 @@ public class TmAdminController {
 			}
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 		}
 		return "admin/main";
 	}
@@ -156,7 +156,7 @@ public class TmAdminController {
 			adminDAO.insertContinent(sendMap);
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 		}
 		
 		return "redirect:main.do";
@@ -189,7 +189,7 @@ public class TmAdminController {
 			adminDAO.insertCountry(sendMap);
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 		}
 		
 		return "redirect:main.do?menu=public";
@@ -222,7 +222,7 @@ public class TmAdminController {
 			adminDAO.insertLeague(sendMap);
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 		}
 		return "redirect:main.do?menu=public";
 	}
@@ -278,7 +278,7 @@ public class TmAdminController {
 			adminDAO.insertClub(sendMap);
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 		}
 		return "redirect:main.do?menu=club";
 	}
@@ -351,7 +351,7 @@ public class TmAdminController {
 			}
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 		}
 		return "redirect:main.do?menu=player&detail=2";
 	}
@@ -400,7 +400,7 @@ public class TmAdminController {
 			}
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 		}
 		return "redirect:main.do?menu=coach&detail=2";
 	}
@@ -428,7 +428,7 @@ public class TmAdminController {
 			adminDAO.updateClubImg(sendMap);
 		}
 		catch(Exception e) {
-			
+			System.out.println(e.getMessage());
 		}
 		return "redirect:main.do?menu=tm_data&detail=1";
 	}
