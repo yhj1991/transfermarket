@@ -50,19 +50,16 @@ function myConnectionLost(obj){
 
 function myMessageArrived(obj){
 	console.log('messageArrived', obj);
-	if(true){
-		window.open("chat_user_to_user.do?id1=${id}&id2=" + id, "test", "width=400,height=400");
-	}
+
 	var idx_in = obj.destinationName.lastIndexOf('server/in');
 	var idx_out = obj.destinationName.lastIndexOf('server/out');
-	
-	if( (idx_in > -1) || (idx_out > -1) ) {
+    
+	if((idx_in > -1) || (idx_out > -1)) {
 		var json_obj = JSON.parse(obj.payloadString);
 	    var json_obj_len = json_obj.length;
 		$('#users').empty();
 		$('#users_count').empty();
-		
-		for(var i=0;i<json_obj_len;i++){
+		for(var i = 0; i < json_obj_len; i++){
 			$('#users').append(
 					'<div class="dropdown">'+
 						'<a href="#" class="dropdown-toggle chat_users" style="color:black;" id="dropdownUsers" data-toggle="dropdown"'+ 
@@ -80,14 +77,23 @@ function myMessageArrived(obj){
 		);
 	}
 	else { 
-		// ds/class603/a
 		var arr = (obj.destinationName).split("/");
-		$('#out').append('<a href="#" class="chat_user" style="color:black;">' + arr[3] + '</a>' + " : " + obj.payloadString + '<br />');
+		var utou = JSON.parse(obj.payloadString);
+		// 메시지 받는사람 ID
+		var id = '${id}';
+		if(!utou.id){
+			$('#out').append('<a href="#" class="chat_user" style="color:black;">' + arr[3] + '</a>' + ' : ' + utou.msg + '<br />');
+		}
+		else {
+			if(utou.id == id) {
+				$('#out').append(utou.msg + '<br />');
+			}
+		}
 	}
 }
 
 function mySuccess(){
-	console.log('success');
+	// console.log('success');
 	client.subscribe('ds/class603/main/#');
 }
 
@@ -103,7 +109,10 @@ $(function(){
 	
 	$('#btn').click(function(){
 		var msg = $('#txt').val();
-		message = new Paho.MQTT.Message(msg);
+		var obj = new Object();
+		obj.msg = msg;
+		var utou = JSON.stringify(obj);
+		message = new Paho.MQTT.Message(utou);
 		message.destinationName = "ds/class603/main/${id}";
 		client.send(message);
 		$('#txt').val('');
@@ -117,17 +126,25 @@ $(document).on('click', '.menu1', function(){
 	window.open("member_info.do?id=" + id, "test", "width=400,height=400" );
 });
 
+function openWin(f,s) { 
+	adWindow=window.open(f,s,'width=200,height=100,status=no,scrollbars=auto'); 
+} 
+
 $(document).on('click', '.menu2', function(){
 	var idx = $(this).index('.menu2');
+	// 1:1 요청걸 ID
 	var id = $('.chat_users').eq(idx).text();
+	// 사용자 ID
 	var user = '${id}';
-	// if(user == id){
-	var msg = '<a href="chat_user_to_user.do" style="color:black;">1:1 대화요청이 왔습니다.</a>';
-	message = new Paho.MQTT.Message(msg);
+	var msg = '<a href="chat_user_to_user.do?id1=${id}&id2=' + id + '" style="color:black;" >${id}님의 1:1 대화요청!!</a>';
+	var obj = new Object();
+	obj.msg = msg;
+	obj.id = id;
+	var utou = JSON.stringify(obj);
+	message = new Paho.MQTT.Message(utou);
 	message.destinationName = "ds/class603/main/server";
 	client.send(message);
-	// }
-	window.open("chat_user_to_user.do?id1=${id}&id2=" + id, "test", "width=400,height=400");	
+	window.open("chat_user_to_user.do?id1=${id}&id2=" + id, "test", "width=400,height=400");
 });
 
 </script>
