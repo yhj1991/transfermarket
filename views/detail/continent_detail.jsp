@@ -13,29 +13,41 @@
 
 <div style="height:30px"></div>
  
-<div class="container">
-	<div class="form-inline" align="center">
-	<c:forEach var="category" items="${category}">
-		<div class="col-sm-2">
-			<div>
-				<a href="${pageContext.request.contextPath}/detail/continent.do?no=${category.continent_no}">
-					<img src="${pageContext.request.contextPath}/img/continent_img.do?no=${category.continent_no}" style="width:65px; height:65px" alt="${category.continent_name}" />
-				</a>
-			</div>
-			<div style="margin-top:3px" class="${category.continent_no == param.no ? "continent_active" : ""}"><span style="font-weight:bold;">${category.continent_name}</span></div>
-		</div>
-	</c:forEach>
-	</div>
+<div class="container" style="padding:0px">
+	<table class="table table-dark table-bordered">
+			<tr>
+				<c:forEach var="category" items="${category}">
+					<td align="center">
+						<a href="${pageContext.request.contextPath}/detail/continent.do?no=${category.continent_no}">
+							<img src="${pageContext.request.contextPath}/img/continent_img.do?no=${category.continent_no}" style="width:65px; height:65px" alt="${category.continent_name}" />
+						</a>
+					</td>
+				</c:forEach>
+			</tr>
+			<tr>
+				<c:forEach var="category" items="${category}">
+					<td align="center" class="${category.continent_no == param.no ? 'continent_active' : ''}">
+						<div style="margin-top:3px">
+							<a href="${pageContext.request.contextPath}/detail/continent.do?no=${category.continent_no}">
+								<span style="font-weight:bold;">${category.continent_name}</span>
+							</a>
+						</div>
+					</td>
+				</c:forEach>
+			</tr>
+	</table>
 </div>
 
 <div style="height:30px"></div>
 
-<div class="container">
-
+<div class="container" style="padding:0px">
 	<table class="table table-dark table-sm">
-		<c:if test="${param.no ==2}">
 		<tr>
-			<th colspan="6" style="text-align:center; font-size:large;">아시아</th>
+			<th colspan="6" style="text-align:center; font-size:x-large;">대륙별 리그</th>
+		</tr>
+		<c:if test="${param.no ne null}">
+		<tr>
+			<th colspan="6" style="text-align:center; font-size:large;">${category[param.no - 1].continent_name}</th>
 		</tr>
 		</c:if>
 		<tr>

@@ -24,7 +24,7 @@
 <div style="height:30px"></div>
 
 <div class="container">
-	<form id="search_club_form" action="club_detail.do" method="get">
+	<form id="search_club_form" action="club.do" method="get">
 		<div class="form-inline">
 		<select id="continent" class="form-control form-control-sm" style="height:40px">
 			<option value="0">대륙</option>
@@ -59,8 +59,12 @@
 	
 	<table class="table table-dark table-hover table-sm" style="margin-top:10px">
 		<tr>
-			<td style="width:150px"><img src="${pageContext.request.contextPath}/img/club_img.do?no=${club.club_no}" id="club_img" alt="${club.club_no}" style="width:92px; height:120px"/></td>
-			<td style="vertical-align:bottom;"><h1>${club.club_name}</h1></td>
+			<td style="width:150px">
+				<img src="${pageContext.request.contextPath}/img/club_img.do?no=${club.club_no}" id="club_img" alt="${club.club_no}" style="width:92px; height:120px"/>
+			</td>
+			<td style="vertical-align:bottom;">
+				<h1>${club.club_name}</h1>
+			</td>
 		</tr>
 		<tr>
 			<td>소속리그</td>
@@ -134,7 +138,12 @@
 											</a>
 										</td>
 										<td style="font-size:small;">
-											<a href="${pageContext.request.contextPath}/detail/player.do?no=${pList.player_no}" style="color:white;">${pList.player_name}</a>
+											<a href="${pageContext.request.contextPath}/detail/player.do?no=${pList.player_no}" style="color:white;">
+												<span>${pList.player_name}</span>
+												<c:if test="${pList.player_no eq pList.club_captain}">
+													<img src="${pageContext.request.contextPath}/resources/img/captain.png" style="width:24px; height:18px; margin-left:5px;" />
+												</c:if>
+											</a>
 										</td>
 									</tr>
 									<tr>
@@ -147,7 +156,7 @@
 									<span style="font-size:small; margin-left:5px">${pList.country_name}</span>
 							</td>
 							<td style="text-align:right; vertical-align:middle;">
-								<span>$</span><span style="font-size:large; font-weight:bold; margin-left:5px">${pList.player_mv}</span><span style="margin-left:5px">Mill</span>
+								<span>$</span><span style="font-size:large; font-weight:bold; margin-left:5px">${pList.player_mv}</span><span style="margin-left:5px">Bill</span>
 							</td>
 						</tr>
 						</c:forEach>
@@ -327,7 +336,7 @@
 						<td style="text-align:center; width:35%">도움</td>
 					</tr>
 					<tr>
-						<td style="text-align:center;">2</td>
+						<td style="text-align:center;">${info.mogoal.attempts}</td>
 						<td style="text-align:center;">${info.mogoal.goal}</td>
 						<td style="text-align:center;">${info.mogoal.assist}</td>
 					</tr>
@@ -381,7 +390,7 @@
 						<td style="text-align:center; width:35%">도움</td>
 					</tr>
 					<tr>
-						<td style="text-align:center;">2</td>
+						<td style="text-align:center;">${info.moassist.attempts}</td>
 						<td style="text-align:center;">${info.moassist.goal}</td>
 						<td style="text-align:center;">${info.moassist.assist}</td>
 					</tr>
@@ -427,7 +436,7 @@
 					<img src="${pageContext.request.contextPath}/img/country_img.do?no=${point.country_no}" style="width:24px; height:16px;" />
 					<span style="margin-left:5px; font-size:small;">${point.country_name}</span>
 				</td>
-				<td style="text-align:center; vertical-align:middle;">2</td>
+				<td style="text-align:center; vertical-align:middle;">${point.attempts}</td>
 				<td style="text-align:center; vertical-align:middle;">${point.goal}</td>
 				<td style="text-align:center; vertical-align:middle;">${point.assist}</td>
 				<td style="text-align:center; vertical-align:middle;">${point.point}</td>
@@ -575,13 +584,13 @@ $(function(){
 									'</table>'+
 								'</td>'+
 								'<td style="vertical-align:middle;">'+
-									'<img src="${pageContext.request.contextPath}/img/country_img.do?no=' + data.playerList[i].country_no + '" />'+
+									'<img src="${pageContext.request.contextPath}/img/country_img.do?no=' + data.playerList[i].country_no + '" style="width:24px; height:16px;"/>'+
 									'<span style="font-size:small; margin-left:5px">' + data.playerList[i].country_name + '</span>'+
 								'</td>'+
 								'<td style="text-align:right; vertical-align:middle;">'+
 									'<span>$</span>'+
 									'<span style="font-size:large; font-weight:bold; margin-left:5px">' + data.playerList[i].player_mv + '</span>'+
-									'<span style="margin-left:5px">Mill</span>'+
+									'<span style="margin-left:5px">Bill</span>'+
 								'</td>'+
 							'</tr>'		
 					);
@@ -619,13 +628,13 @@ $(function(){
 									'</table>'+
 								'</td>'+
 								'<td style="vertical-align:middle;">'+
-									'<img src="${pageContext.request.contextPath}/img/country_img.do?no=' + data.playerList[i].country_no + '" />'+
+									'<img src="${pageContext.request.contextPath}/img/country_img.do?no=' + data.playerList[i].country_no + '" style="width:24px; height:16px;"/>'+
 									'<span style="font-size:small; margin-left:5px">' + data.playerList[i].country_name + '</span>'+
 								'</td>'+
 								'<td style="text-align:right; vertical-align:middle;">'+
 									'<span>$</span>'+
 									'<span style="font-size:large; font-weight:bold; margin-left:5px">' + data.playerList[i].player_mv + '</span>'+
-									'<span style="margin-left:5px">Mill</span>'+
+									'<span style="margin-left:5px">Bill</span>'+
 								'</td>'+
 							'</tr>'		
 					);

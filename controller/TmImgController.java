@@ -204,4 +204,50 @@ public class TmImgController {
 			return null;
 		}
 	}
+	
+	// 팀 이미지
+	@RequestMapping(value = "/team_img.do", method = RequestMethod.GET)
+	public ResponseEntity<byte[]> teamImg(
+			@RequestParam("no") int no){
+		
+		try {
+			Map<String, Object> sendMap = new HashMap<String, Object>();
+			sendMap.put("no", no);
+			
+			Map<String, Object> getMap = imgDAO.selectTeamImg(sendMap);
+			
+			final HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.IMAGE_JPEG);
+			
+			byte[] img = (byte[])getMap.get("team_filedata");
+			return new ResponseEntity<byte[]>(img, headers, HttpStatus.OK);
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			return null;
+		}
+	}
+	
+	// 회원 이미지
+	@RequestMapping(value = "/mem_img.do", method = RequestMethod.GET)
+	public ResponseEntity<byte[]> memberImg(
+			@RequestParam("id") String id){
+		
+		try {
+			Map<String, Object> sendMap = new HashMap<String, Object>();
+			sendMap.put("id", id);
+			
+			Map<String, Object> getMap = imgDAO.selectMemberImg(sendMap);
+			
+			final HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.IMAGE_JPEG);
+			
+			byte[] img = (byte[])getMap.get("mem_filedata");
+			return new ResponseEntity<byte[]>(img, headers, HttpStatus.OK);
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			return null;
+		}
+	}
 }

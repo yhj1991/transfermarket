@@ -103,6 +103,11 @@ public class TmDetailDAO {
 		return sqlsession.selectOne("tm_detail.select_detail_coach", map);
 	}
 	
+	// 경기일정 전체
+	public List<Map<String, Object>> selectDetailMatchList(Map<String, Object> map){
+		return sqlsession.selectList("tm_detail.select_detail_matchlist", map);
+	}
+	
 	// 경기일정 상세
 	public Map<String, Object> selectDetailMatch(Map<String, Object> map){
 		return sqlsession.selectOne("tm_detail.select_detail_match", map);

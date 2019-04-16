@@ -8,6 +8,7 @@
 	<link href="${pageContext.request.contextPath}/resources/bootstrap-4.3.1/css/bootstrap.min.css" rel="stylesheet" />
 	<script src="${pageContext.request.contextPath}/resources/jquery-3.3.1.min.js"></script>
 	<script src="${pageContext.request.contextPath}/resources/popper.min.js"></script>
+	<script src="${pageContext.request.contextPath}/resources/Chart.js"></script>
 	<script src="${pageContext.request.contextPath}/resources/bootstrap-4.3.1/js/bootstrap.min.js"></script>
 	<script src="${pageContext.request.contextPath}/resources/fontawesome-5.5.0/js/all.min.js"></script>
 	<script src="${pageContext.request.contextPath}/resources/jquery-validate/jquery.validate.min.js"></script>
@@ -25,12 +26,12 @@
 		
 		<sec:authorize access="isAuthenticated()">
 			<div class="form-inline" style="font-size:small; font-weight:bold; margin-right:25px; color:white;">
-				<sec:authentication property="principal.username"/>회원님
+				<sec:authentication property="principal.username" var="sec_id"/>${sec_id} 회원님
 			</div>
 		</sec:authorize>
 		
 		<a href="${pageContext.request.contextPath}/main.do" class="form-inline" style="font-size:small; margin-right:15px; color:white;">홈</a>
-		
+		<%-- <a href="${pageContext.request.contextPath}/team/main.do" class="form-inline" style="font-size:small; margin-right:15px; color:white;">소속팀</a> --%>
 		<sec:authorize access="isAnonymous()">
 			<a href="#" class="form-inline" style="font-size:small; margin-right:15px; color:white;" id="login_modal_btn">로그인</a>
 			<a href="#" class="form-inline" style="font-size:small; margin-right:15px; color:white;" id="join_modal_btn">회원가입</a>
@@ -40,7 +41,7 @@
 			<a href="${pageContext.request.contextPath}/logout.do" class="form-inline" style="font-size:small; margin-right:15px; color:white;">로그아웃</a>
 			<a href="${pageContext.request.contextPath}/mypage/main.do" class="form-inline" style="font-size:small; margin-right:15px; color:white;">마이페이지</a>
 		</sec:authorize>
-		<a href="${pageContext.request.contextPath}/suggest.do" class="form-inline" style="font-size:small; margin-right:15px; color:white;">정보수정</a>
+		<%-- <a href="${pageContext.request.contextPath}/suggest.do" class="form-inline" style="font-size:small; margin-right:15px; color:white;">정보수정</a> --%>
 		<a href="${pageContext.request.contextPath}/support/main.do" class="form-inline" style="font-size:small; margin-right:15px; color:white;">게시판</a>
 		
 		<sec:authorize access="hasRole('ROLE_ADMIN')">

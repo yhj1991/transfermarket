@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="tm_team">
+	<!--
+	나이 업데이트 
+	UPDATE
+		tm_member_info a,
+		(SELECT a1.mem_id, (a1.year-a1.mem_birth) mem_age
+		 FROM(SELECT mem_id, EXTRACT(YEAR FROM NOW()) year, SUBSTRING(mem_birth,1,4) mem_birth
+		 FROM tm_member_info) a1) a2
+	SET a.mem_age = a2.mem_age
+	WHERE a.mem_id = a2.mem_id
+	 -->
+	<!-- 나의 팀 -->
+	<select id="select_my_team" parameterType="map" resultType="map">
+		SELECT
+				a.team_no, a.team_name, a.team_addr, a.team_phone, a.team_stadium, DATE_FORMAT(a.team_date, '%Y-%m-%d %H:%i:%s') team_date
+		FROM
+				tm_team a
+		INNER JOIN
+				(SELECT
+						b.mem_id, c.team_no
+				 FROM
+				 		tm_member b
+				 INNER JOIN
+				 		tm_member_info c
+				 ON
+				 		b.mem_id = c.mem_id
+				 WHERE
+				 		b.mem_id = #{id}) a1
+		ON
+				a.team_no = a1.team_no
+	</select>
+
+	<!-- 내 정보 -->
+	<select id="select_member_one" parameterType="map" resultType="map">
+		SELECT
+				a.team_name, a.team_addr, a1.*
+		FROM
+				tm_team a
+		INNER JOIN
+				(SELECT
+						b.mem_id, b.mem_name, c.mem_addr, b.mem_tel, b.mem_email, c.team_no, c.mem_age, c.mem_foot, c.mem_backnum, c.mem_birth, c.mem_position1, c.mem_position2
+				 FROM
+				 		tm_member b
+				 INNER JOIN
+				 		tm_member_info c
+				 ON
+				 		b.mem_id = c.mem_id
+				 WHERE
+				 		b.mem_id = #{id}) a1
+		ON
+				a.team_no = a1.team_no
+	</select>
+</mapper>

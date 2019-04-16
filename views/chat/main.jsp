@@ -50,19 +50,17 @@ function myConnectionLost(obj){
 
 function myMessageArrived(obj){
 	console.log('messageArrived', obj);
-	if(true){
-		window.open("chat_user_to_user.do?id1=${id}&id2=" + id, "test", "width=400,height=400");
-	}
+	
 	var idx_in = obj.destinationName.lastIndexOf('server/in');
 	var idx_out = obj.destinationName.lastIndexOf('server/out');
 	
-	if( (idx_in > -1) || (idx_out > -1) ) {
+	if((idx_in > -1)||(idx_out > -1)) {
 		var json_obj = JSON.parse(obj.payloadString);
 	    var json_obj_len = json_obj.length;
 		$('#users').empty();
 		$('#users_count').empty();
 		
-		for(var i=0;i<json_obj_len;i++){
+		for(var i = 0; i < json_obj_len; i++){
 			$('#users').append(
 					'<div class="dropdown">'+
 						'<a href="#" class="dropdown-toggle chat_users" style="color:black;" id="dropdownUsers" data-toggle="dropdown"'+ 
@@ -84,10 +82,11 @@ function myMessageArrived(obj){
 		var arr = (obj.destinationName).split("/");
 		$('#out').append('<a href="#" class="chat_user" style="color:black;">' + arr[3] + '</a>' + " : " + obj.payloadString + '<br />');
 	}
+	
 }
 
 function mySuccess(){
-	console.log('success');
+	// console.log('success');
 	client.subscribe('ds/class603/main/#');
 }
 
@@ -122,7 +121,10 @@ $(document).on('click', '.menu2', function(){
 	var id = $('.chat_users').eq(idx).text();
 	var user = '${id}';
 	// if(user == id){
-	var msg = '<a href="chat_user_to_user.do" style="color:black;">1:1 대화요청이 왔습니다.</a>';
+	
+	var chat = new Array();
+	var chatojb = new Object();
+	var msg = '<a href="chat_user_to_user.do?id1=${id}&id2=' + id + '" style="color:black;">${id}님의 1:1 대화요청!!</a>';
 	message = new Paho.MQTT.Message(msg);
 	message.destinationName = "ds/class603/main/server";
 	client.send(message);

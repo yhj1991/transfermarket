@@ -36,7 +36,8 @@ public class TmAdminController {
 		try {
 			// 관리자 메인
 			if(menu.equals("")) {
-				model.addAttribute("main", adminDAO.selectAdminMainList());
+				// model.addAttribute("main", adminDAO.selectAdminMainList());
+				return "redirect:main.do?menu=member&detail=1";
 			}
 			// 관리자 회원 관리
 			if(menu.equals("member")) {

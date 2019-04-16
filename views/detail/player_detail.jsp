@@ -8,6 +8,10 @@
 	margin-left:15px;
 	color:white;
 }
+.table-sm tr td {
+	font-size:small;
+	vertical-align:middle;
+}
 </style>
 <jsp:include page="../header.jsp"></jsp:include>
 
@@ -32,62 +36,68 @@
 	</div>
 	
 	<div class="player_div2">
-		<table class="table table-dark">
-			<tr>
-				<td><a href="#선수정보" class="form-inline" style="color:white;">선수정보</a></td>
-				<td><a href="#선수가치" class="form-inline player_link">선수가치</a></td>
-				<!-- 
-				<td><a href="#이적정보" class="form-inline player_link">이적정보</a></td>
-				<td><a href="#수상내역" class="form-inline player_link">수상내역</a></td>
-				<td><a href="#뉴스" class="form-inline player_link">뉴스</a></td>
-				 -->
+		<table class="table table-sm table-dark table-bordered">
+			<tr style="height:10%">
+				<th colspan="6" style="font-size:x-large;">선수 정보</th>
+			</tr>
+			<tr style="height:10%">
+				<td colspan="2" style="width:30%; text-align:center;"><span style="font-size:small; font-weight:bold;">상세정보</span></td>
+				<td colspan="2" style="width:35%; text-align:center;"><span style="font-size:small; font-weight:bold;">포지션 : ${player.player_position1} - ${player.player_position2}</span></td>
+				<td colspan="2" style="width:35%; text-align:center;"><span style="font-size:small; font-weight:bold;">선수 가치 (최근 4시즌) / 공격포인트 (최근 4시즌)</span></td>
+			</tr>
+			<tr style="height:10%">
+				<td style="width:10%">국가</td>
+				<td style="width:20%">
+					<img src="${pageContext.request.contextPath}/img/country_img.do?no=${player.country_no}" style="width:24px; height:16px;"/> 
+					<span style="margin-left:5px;">${player.country_name}</span>
+				</td>
+				<td colspan="2" rowspan="10" style="border-top:none; text-align:center;">
+					<img src="${pageContext.request.contextPath}/img/position_img.do?position2=${player.player_position2}" />
+				</td>
+				<td colspan="2" rowspan="4" style="border-top:none; width:200px;">
+					<canvas id="myChart1"></canvas>
+				</td>
+			</tr>
+			<tr style="height:10%">
+				<td>소속팀</td>
+				<td>
+					<a href="${pageContext.request.contextPath}/detail/club.do?no=${player.club_no}">
+						<img src="${pageContext.request.contextPath}/img/club_img.do?no=${player.club_no}" style="width:18px; height:24px;"/>
+						<span style="margin-left:5px;">${player.club_name}</span>
+					</a>
+				</td>
+			</tr>
+			<tr style="height:10%">
+				<td>등번호</td>
+				<td>${player.player_backnum}</td>
+			</tr>
+			<tr style="height:10%">
+				<td>생년월일</td>
+				<td>${player.player_birth}</td>
+			</tr>
+			<tr style="height:10%">
+				<td>나이</td>
+				<td>${player.player_age}</td>
+				<td colspan="2" rowspan="4" style="border-top:none;">
+					<canvas id="myChart2"></canvas>
+				</td>
+			</tr>
+			<tr style="height:10%">
+				<td>키</td>
+				<td>${player.player_height}</td>
+			</tr>
+			<tr style="height:10%">
+				<td>가치</td>
+				<td>${player.player_mv}</td>
+			</tr>
+			<tr style="height:10%">
+				<td>사용하는 발</td>
+				<td>${player.player_foot}</td>
 			</tr>
 		</table>
 	</div>
-
-	<div class="player_div3">
-		<table class="table table-sm table-dark">
-				<tr>
-					<td style="width:20%">국가</td>
-					<td style="width:20%"><img src="${pageContext.request.contextPath}/img/country_img.do?no=${player.country_no}" style="width:24px; height:16px;"/> ${player.country_name}</td>
-					<td style="text-align:center;"><span style="font-size:small; font-weight:bold;">포지션 : ${player.player_position1} - ${player.player_position2}</span></td>
-					<td rowspan="9" style="width:40%"></td>
-				</tr>
-				<tr>
-					<td>소속팀</td>
-					<td><a href="${pageContext.request.contextPath}/detail/club.do?no=${player.club_no}"><img src="${pageContext.request.contextPath}/img/club_img.do?no=${player.club_no}" style="width:18px; height:24px;"/> ${player.club_name}</a></td>
-					<td rowspan="8" style="width:20%; border-top:none;">
-						<img src="${pageContext.request.contextPath}/img/position_img.do?position2=${player.player_position2}" />
-					</td>
-				</tr>
-				<tr>
-					<td>등번호</td>
-					<td>${player.player_backnum}</td>
-				</tr>
-				<tr>
-					<td>생년월일</td>
-					<td>${player.player_birth}</td>
-				</tr>
-				<tr>
-					<td>나이</td>
-					<td>${player.player_age}</td>
-				</tr>
-				<tr>
-					<td>키</td>
-					<td>${player.player_height}</td>
-				</tr>
-				<tr>
-					<td>가치</td>
-					<td>${player.player_mv}</td>
-				</tr>
-				<tr>
-					<td>사용하는 발</td>
-					<td>${player.player_foot}</td>
-				</tr>
-		</table>
-	</div>
 	
-	<div class="player_div4">
+	<div class="player_div3">
 		<table class="table table-dark">
 			<tr>
 				<td style="width:32%; text-align:center;">대회</td>
@@ -113,5 +123,46 @@
 		</table>
 	</div>
 </div>
+
+<script>
+$(function(){
+	// Chart.defaults.line.spanGaps = true;
+	// new Chart(document.getElementById('myChart'),{
+	Chart.defaults.global.defaultFontColor = 'white';
+	new Chart($('#myChart1'),{
+		type : 'line',
+		data : {
+				labels : ['2016', '2017', '2018', '2019'],
+				datasets : [{
+								label : '선수 가치', 
+								data : [3, 1, 4, 2], 
+								fill : false, 
+								borderColor : 'rgb(75, 192, 192)', 
+								lineTension : 0.3
+								}]
+				},
+		options : {
+			maintainAspectRatio: false
+		}
+	});
+	
+	new Chart($('#myChart2'),{
+		type : 'line',
+		data : {
+				labels : ['2016', '2017', '2018', '2019'],
+				datasets : [{
+								label : '공격포인트', 
+								data : [68, 74, 63, 71], 
+								fill : false, 
+								borderColor : 'rgba(153, 102, 255, 1)', 
+								lineTension : 0.3
+								}]
+				},
+		options : {
+			maintainAspectRatio: false
+		}
+	});
+});
+</script>
 
 <jsp:include page="../footer.jsp"></jsp:include>
