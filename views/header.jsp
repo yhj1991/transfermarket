@@ -31,17 +31,16 @@
 		</sec:authorize>
 		
 		<a href="${pageContext.request.contextPath}/main.do" class="form-inline" style="font-size:small; margin-right:15px; color:white;">홈</a>
-		<%-- <a href="${pageContext.request.contextPath}/team/main.do" class="form-inline" style="font-size:small; margin-right:15px; color:white;">소속팀</a> --%>
 		<sec:authorize access="isAnonymous()">
 			<a href="#" class="form-inline" style="font-size:small; margin-right:15px; color:white;" id="login_modal_btn">로그인</a>
 			<a href="#" class="form-inline" style="font-size:small; margin-right:15px; color:white;" id="join_modal_btn">회원가입</a>
 		</sec:authorize>
 		
 		<sec:authorize access="isAuthenticated()">
+			<%-- <a href="${pageContext.request.contextPath}/team/main.do" class="form-inline" style="font-size:small; margin-right:15px; color:white;">소속팀</a> --%>
 			<a href="${pageContext.request.contextPath}/logout.do" class="form-inline" style="font-size:small; margin-right:15px; color:white;">로그아웃</a>
 			<a href="${pageContext.request.contextPath}/mypage/main.do" class="form-inline" style="font-size:small; margin-right:15px; color:white;">마이페이지</a>
 		</sec:authorize>
-		<%-- <a href="${pageContext.request.contextPath}/suggest.do" class="form-inline" style="font-size:small; margin-right:15px; color:white;">정보수정</a> --%>
 		<a href="${pageContext.request.contextPath}/support/main.do" class="form-inline" style="font-size:small; margin-right:15px; color:white;">게시판</a>
 		
 		<sec:authorize access="hasRole('ROLE_ADMIN')">

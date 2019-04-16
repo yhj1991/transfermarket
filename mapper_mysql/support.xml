@@ -219,4 +219,24 @@
 				support_no = #{no}
 	</update>
 	
+	<!-- 게시판 댓글수정 -->
+	<update id="update_support_comment" parameterType="map">
+		UPDATE
+				tm_comment
+		SET
+				comment_text = #{text}, comment_date = now()
+		WHERE
+				support_no = #{supno} AND comment_no = #{no}
+	</update>
+	
+	<!-- 게시판 댓글삭제 -->
+	<update id="delete_support_comment" parameterType="map">
+		UPDATE
+				tm_comment
+		SET
+				comment_del = 0
+		WHERE
+				comment_no = #{no} AND support_no = #{supno}
+	</update>
+	
 </mapper>

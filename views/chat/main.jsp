@@ -80,7 +80,16 @@ function myMessageArrived(obj){
 	else { 
 		// ds/class603/a
 		var arr = (obj.destinationName).split("/");
-		$('#out').append('<a href="#" class="chat_user" style="color:black;">' + arr[3] + '</a>' + " : " + obj.payloadString + '<br />');
+		var utou = JSON.parse(obj.payloadString);
+		var id = '${id}';
+		if(utou.id != null){
+			if(utou.id == id) {
+				$('#out').append(utou.msg + '<br />');
+			}
+		}
+		else {
+			$('#out').append('<a href="#" class="chat_user" style="color:black;">' + arr[3] + '</a>' + " : " + obj.payloadString + '<br />');
+		}
 	}
 	
 }
@@ -116,20 +125,23 @@ $(document).on('click', '.menu1', function(){
 	window.open("member_info.do?id=" + id, "test", "width=400,height=400" );
 });
 
+function openWin(f,s) { 
+	adWindow=window.open(f,s,'width=200,height=100,status=no,scrollbars=auto'); 
+} 
+
 $(document).on('click', '.menu2', function(){
 	var idx = $(this).index('.menu2');
 	var id = $('.chat_users').eq(idx).text();
 	var user = '${id}';
-	// if(user == id){
-	
-	var chat = new Array();
-	var chatojb = new Object();
-	var msg = '<a href="chat_user_to_user.do?id1=${id}&id2=' + id + '" style="color:black;">${id}님의 1:1 대화요청!!</a>';
-	message = new Paho.MQTT.Message(msg);
+	var msg = '<a href="chat_user_to_user.do?id1=${id}&id2=' + id + '" style="color:black;" >${id}님의 1:1 대화요청!!</a>';
+	var obj = new Object();
+	obj.msg = msg;
+	obj.id = id;
+	var utou = JSON.stringify(obj);
+	message = new Paho.MQTT.Message(utou);
 	message.destinationName = "ds/class603/main/server";
 	client.send(message);
-	// }
-	window.open("chat_user_to_user.do?id1=${id}&id2=" + id, "test", "width=400,height=400");	
+	window.open("chat_user_to_user.do?id1=${id}&id2=" + id, "test", "width=400,height=400");
 });
 
 </script>

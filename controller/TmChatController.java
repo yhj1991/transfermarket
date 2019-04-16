@@ -31,7 +31,6 @@ public class TmChatController {
 		try {
 			Map<String, Object> sendMap = new HashMap<String, Object>();
 			sendMap.put("id", id);
-			
 			model.addAttribute("member", chatDAO.selectTmMember(sendMap));
 		}
 		catch(Exception e) {
@@ -47,12 +46,8 @@ public class TmChatController {
 			@RequestParam(value="id2") String id2) {
 		try {
 			String topic = id1 + "_to_" + id2;
-			
-			System.out.println(topic);
-			
 			Map<String, Object> sendMap = new HashMap<String, Object>();
 			sendMap.put("topic", topic);
-			
 			model.addAttribute("topic", sendMap);
 		}
 		catch(Exception e) {

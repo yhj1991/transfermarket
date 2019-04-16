@@ -143,4 +143,57 @@ public class RestSupportController {
 		return sendMap;
 	}	
 	
+	// 게시판 댓글 수정
+	@RequestMapping(value = "/rest_update_comment.json", 
+			method = {RequestMethod.GET, RequestMethod.POST}, 
+			produces="application/json")
+	public @ResponseBody Map<String, Object> restUpdateComment(Authentication auth,
+			@RequestParam("supno") int supno,
+			@RequestParam("no") int no,
+			@RequestParam("utext") String utext){
+		
+		Map<String, Object> sendMap = new HashMap<String, Object>();
+		try {
+			if(auth != null) {
+				sendMap.put("supno", supno);
+				sendMap.put("no", no);
+				sendMap.put("text", utext);
+				sendMap.put("ret", supportDAO.updateSupportComment(sendMap));
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			sendMap.put("ret", 0);
+		}
+		return sendMap;
+	}	
+	
+	
+	// 게시판 댓글삭제
+	@RequestMapping(value = "/rest_delete_comment.json", 
+			method = {RequestMethod.GET, RequestMethod.POST}, 
+			produces="application/json")
+	public @ResponseBody Map<String, Object> restDeleteComment(Authentication auth,
+			@RequestParam("supno") int supno,
+			@RequestParam("no") int no){
+		
+		Map<String, Object> sendMap = new HashMap<String, Object>();
+		System.out.println(supno);
+		System.out.println(no);
+		try {
+			if(auth != null) {
+				sendMap.put("supno", supno);
+				sendMap.put("no", no);
+				sendMap.put("ret", supportDAO.deleteSupportComment(sendMap));
+			}
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+			sendMap.put("ret", 0);
+		}
+		return sendMap;
+	}	
+	
+	
+	
 }
