@@ -73,27 +73,52 @@ public class TmMatch {
 		kickoffList.clear();
 		dateList.clear();
 		
-		for(int i = 0; i < clubs - 1; i++) {
+		for(int i = 0; i < (clubs - 1)*2; i++) {
 			String[] matchtime = kickoff.split(":");
 			int hour = Integer.parseInt(matchtime[0])+3;
-			for(int j = 0; j < clubs/2; j++) {
-				homeList.add((Integer)jobj.get("" + club_no[j]));
-				awayList.add((Integer)jobj.get("" + club_no[clubs-j-1]));
-				TmMatch.createDate(matchdate, i);
-				if(i%2 > 0) {
-					if(hour < 10) {
-						kickoffList.add("0" + hour + ":" + matchtime[1]);
+			if(i < (clubs - 1)) {
+				for(int j = 0; j < clubs/2; j++) {
+					homeList.add((Integer)jobj.get("" + club_no[j]));
+					awayList.add((Integer)jobj.get("" + club_no[clubs-j-1]));
+					TmMatch.createDate(matchdate, i);
+					if(i%2 > 0) {
+						if(hour < 10) {
+							kickoffList.add("0" + hour + ":" + matchtime[1]);
+						}
+						else {
+							kickoffList.add(hour + ":" + matchtime[1]);
+						}
 					}
 					else {
-						kickoffList.add(hour + ":" + matchtime[1]);
+						kickoffList.add(matchtime[0]+":"+matchtime[1]);
 					}
 				}
-				else {
-					kickoffList.add(matchtime[0]+":"+matchtime[1]);
+				for (int j = 0; j < clubs - 1; j++) {
+					club_no[j] = (club_no[j] + 1) % (clubs - 1);
+					System.out.println(j + " : " + club_no[j]);
 				}
 			}
-			for (int j = 0; j < clubs - 1; j++) {
-				club_no[j] = (club_no[j] + 1) % (clubs - 1);
+			else {
+				for(int j = 0; j < clubs/2; j++) {
+					homeList.add((Integer)jobj.get("" + club_no[clubs-j-1]));
+					awayList.add((Integer)jobj.get("" + club_no[j]));
+					TmMatch.createDate(matchdate, i);
+					if(i%2 > 0) {
+						if(hour < 10) {
+							kickoffList.add("0" + hour + ":" + matchtime[1]);
+						}
+						else {
+							kickoffList.add(hour + ":" + matchtime[1]);
+						}
+					}
+					else {
+						kickoffList.add(matchtime[0]+":"+matchtime[1]);
+					}
+				}
+				for (int j = 0; j < clubs - 1; j++) {
+					club_no[j] = (club_no[j] + 1) % (clubs - 1);
+					System.out.println(j + " : " + club_no[j]);
+				}
 			}
 		}
 	}

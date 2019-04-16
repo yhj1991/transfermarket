@@ -53,6 +53,7 @@ public class TmDetailController {
 			// league.league 리그정보 & league.clubs 클럽목록
 			model.addAttribute("continentList", detailDAO.selectSbContinentList(null));
 			model.addAttribute("league", detailDAO.selectDetailLeague(sendMap));
+			model.addAttribute("match", detailDAO.selectDetailMatchList(sendMap));
 		}
 		catch(Exception e) {
 			System.out.println(e.getMessage());
@@ -107,7 +108,7 @@ public class TmDetailController {
 	
 	// 매치정보 상세페이지
 	@RequestMapping(value = "/match.do", method = RequestMethod.GET)
-	public String ScheduleDetail(Model model, HttpSession httpSession,
+	public String match(Model model, HttpSession httpSession,
 			@RequestParam(value = "no", defaultValue="0") int no) {
 		
 		try {
@@ -126,7 +127,7 @@ public class TmDetailController {
 		}
 		return "detail/match_detail";
 	}
-		
+	
 	// 챔스매치정보 상세페이지
 	@RequestMapping(value = "/champs_match.do", method = RequestMethod.GET)
 	public String champsScheduleDetail(Model model, HttpSession httpSession,
@@ -147,4 +148,22 @@ public class TmDetailController {
 		return "detail/champs_match_detail";
 	}
 	
+	/*
+	@RequestMapping(value = "/matchlist.do", method = RequestMethod.GET)
+	public String matchList(Model model,
+			@RequestParam(value = "no", defaultValue="0") int no) {
+	
+		try {
+			Map<String, Object> sendMap = new HashMap<String, Object>();
+			sendMap.put("no", no);
+			model.addAttribute("category", mainDAO.selectMainCardCategory());
+			model.addAttribute("league", detailDAO.selectDetailContinent(sendMap));
+			model.addAttribute("match", detailDAO.selectDetailMatchList(sendMap));
+		}
+		catch(Exception e) {
+			System.out.println(e.getMessage());
+		}
+		return "detail/matchlist_detail";
+	}
+	*/	
 }

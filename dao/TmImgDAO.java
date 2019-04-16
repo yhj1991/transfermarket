@@ -53,4 +53,14 @@ public class TmImgDAO {
 	public Map<String, Object> selectFormationImg(Map<String, Object> map){
 		return sqlsession.selectOne("tm_img.select_formation_img", map);
 	}
+	
+	// 팀 이미지
+	public Map<String, Object> selectTeamImg(Map<String, Object> map) {
+		return sqlsession.selectOne("tm_img.select_team_img", map);
+	}
+	
+	// 회원 이미지
+	public Map<String, Object> selectMemberImg(Map<String, Object> map) {
+		return sqlsession.selectOne("tm_img.select_mem_img", map);
+	}
 }

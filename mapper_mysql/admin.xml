@@ -288,6 +288,7 @@
 				mem_id, mem_name, mem_tel, mem_email, DATE_FORMAT(mem_date, '%Y-%m-%d %H:%i:%s') mem_date, 
 				DATE_FORMAT(block_date, '%Y-%m-%d %H:%i:%s') block_date, jointype, enabled, 
 				CASE authority 
+				WHEN 'ROLE_ADMIN' THEN '관리자'
 				WHEN 'ROLE_COACH' THEN '감독'
 			    WHEN 'ROLE_CLUB' THEN '클럽'
 			    WHEN 'ROLE_USER' THEN '일반'
@@ -305,6 +306,7 @@
 		SELECT
 				mem_id, mem_name, mem_tel, mem_email, DATE_FORMAT(mem_date, '%Y-%m-%d %H:%i:%s') mem_date, jointype, enabled, 
 				CASE authority 
+				WHEN 'ROLE_ADMIN' THEN '관리자'
 				WHEN 'ROLE_COACH' THEN '감독'
 			    WHEN 'ROLE_CLUB' THEN '클럽'
 			    WHEN 'ROLE_USER' THEN '일반'
@@ -323,6 +325,7 @@
 				mem_id, mem_name, mem_tel, mem_email, DATE_FORMAT(mem_date, '%Y-%m-%d %H:%i:%s') mem_date, 
 				DATE_FORMAT(block_date, '%Y-%m-%d %H:%i:%s') block_date, jointype, enabled, 
 				CASE authority 
+				WHEN 'ROLE_ADMIN' THEN '관리자'
 				WHEN 'ROLE_COACH' THEN '감독'
 			    WHEN 'ROLE_CLUB' THEN '클럽'
 			    WHEN 'ROLE_USER' THEN '일반'
@@ -359,6 +362,7 @@
 				mem_id, mem_name, mem_tel, mem_email, DATE_FORMAT(mem_date, '%Y-%m-%d %H:%i:%s') mem_date, 
 				DATE_FORMAT(block_date, '%Y-%m-%d %H:%i:%s') block_date, jointype, enabled, CAST(@rownum:=@rownum+1 AS INT) rank,
 				CASE authority 
+				WHEN 'ROLE_ADMIN' THEN '관리자'
 				WHEN 'ROLE_COACH' THEN '감독'
 			    WHEN 'ROLE_CLUB' THEN '클럽'
 			    WHEN 'ROLE_USER' THEN '일반'

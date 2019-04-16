@@ -85,7 +85,7 @@
 	<!-- 리그 상세 리그정보 -->
 	<select id="select_detail_league1" parameterType="map" resultType="map">
 		SELECT
-				a.league_name, a.country_no, b.country_name, b.continent_no, b.continent_name
+				a.league_no, a.league_name, a.country_no, b.country_name, b.continent_no, b.continent_name
 		FROM
 				tm_league a
 		INNER JOIN
@@ -348,7 +348,7 @@
 		ORDER BY
 				player_mv DESC, player_no ASC
 		LIMIT
-				3
+				10
 	</select>
 	
 	<!-- 리그 상세 득점순위 -->
@@ -382,7 +382,7 @@
 		ORDER BY
 				goal DESC, attempts ASC, player_no ASC
 		LIMIT
-				6
+				10
 	</select>
 	
 	<!-- 리그 상세 도움순위 -->
@@ -416,7 +416,7 @@
 		ORDER BY
 				assist DESC, attempts ASC, player_no ASC
 		LIMIT
-				6
+				10
 	</select>
 	
 	<!-- 선수 상세 -->
@@ -466,36 +466,39 @@
 	<!-- 클럽 상세 선수리스트 -->
 	<select id="select_detail_club_playerlist" parameterType="map" resultType="map">
 		SELECT
-				a3.country_no, a3.country_name, a3.player_no, a3.player_name, a3.player_backnum, a3.player_mv, a3.player_position1, a3.player_position2
-		FROM (SELECT
-						d.country_name, c.*
+				b1.*
+		FROM
+				(SELECT
+						a1.country_no, c.country_name, a1.player_no, a1.player_name, a1.player_backnum, a1.player_mv, a1.player_position1, a1.player_position2, a1.club_captain
 				 FROM
-				 		tm_player c
+						(SELECT
+								a.country_no, a.club_no, a.player_no, a.player_name, a.player_backnum, a.player_mv, a.player_position1, a.player_position2, b.club_captain
+			             FROM
+			             		tm_player a INNER JOIN tm_club b ON a.club_no = b.club_no) a1
 				 INNER JOIN
-				 		tm_country d
+						tm_country c
 				 ON
-				 		c.country_no = d.country_no) a3
-		INNER JOIN (SELECT
-								a1.*, b.club_no
-						FROM
-								tm_club b
-						INNER JOIN (SELECT
-												a.country_name, b.league_no
-										FROM
-												tm_country a
-		                        		INNER JOIN
-		                        				tm_league b
-		                        		ON
-		                        				a.country_no = b.country_no) a1
-						ON
-								b.league_no = a1.league_no
-		            	WHERE
-		            			b.club_no = #{no}) a2
-		ON
-				a3.club_no = a2.club_no
+						a1.country_no = c.country_no
+				 WHERE
+						a1.club_no = #{no}) b1
 		ORDER BY FIELD
 				(player_position1, 'Goalkeeper', 'Defender', 'Midfielder', 'Forward'), player_position2 DESC
 	</select>
+	<!-- 
+	SELECT
+			a3.country_no, a3.country_name, a3.player_no, a3.player_name, a3.player_backnum, a3.player_mv, a3.player_position1, a3.player_position2
+	FROM (SELECT
+				d.country_name, c.*
+		 FROM
+				tm_player c
+		 INNER JOIN
+				tm_country d
+		 ON
+				c.country_no = d.country_no
+		WHERE c.club_no = 50) a3
+	ORDER BY FIELD
+			(a3.player_position1, 'Goalkeeper', 'Defender', 'Midfielder', 'Forward'), player_position2 DESC;
+	 -->
 	
 	<!-- 클럽 상세 선수리스트 가치별 정렬 -->
 	<select id="select_rest_detail_club_playerlist" parameterType="map" resultType="map">
@@ -602,25 +605,25 @@
 	<!-- 클럽 상세 최다득점자 -->
 	<select id="select_detail_club_mogoal" parameterType="map" resultType="map">
 		SELECT
-				a1.*, SUM(c.goal) goal, SUM(c.assist) assist
+				a1.*, aa.attempts, aa.goal, aa.assist
 		FROM (SELECT
 						a.club_no, a.player_no, a.player_name, a.country_no, b.country_name, a.player_age, a.player_position1, a.player_position2
 				 FROM
 						 tm_player a
 				 INNER JOIN
-				 		tm_country b
+						tm_country b
 				 ON
-				 		a.country_no = b.country_no) a1
+						a.country_no = b.country_no) a1
 		INNER JOIN
-				tm_point c
+				(SELECT d.player_no, SUM(c.goal) goal, SUM(c.assist) assist, COUNT(match_no) attempts FROM tm_point c INNER JOIN tm_player d ON c.player_no = d.player_no GROUP BY c.player_no) aa
 		ON
-				a1.player_no = c.player_no
+				a1.player_no = aa.player_no
 		WHERE
 				a1.club_no = #{no}
 		GROUP BY
 				a1.player_no
 		ORDER BY
-				goal DESC
+				goal DESC, attempts ASC, assist DESC
 		LIMIT
 				1
 	</select>
@@ -628,25 +631,25 @@
 	<!-- 클럽 상세 최다도움 -->
 	<select id="select_detail_club_moassist" parameterType="map" resultType="map">
 		SELECT
-				a1.*, SUM(c.goal) goal, SUM(c.assist) assist
+				a1.*, aa.attempts, aa.goal, aa.assist
 		FROM (SELECT
 						a.club_no, a.player_no, a.player_name, a.country_no, b.country_name, a.player_age, a.player_position1, a.player_position2
 				 FROM
 						 tm_player a
 				 INNER JOIN
-				 		tm_country b
+						tm_country b
 				 ON
-				 		a.country_no = b.country_no) a1
+						a.country_no = b.country_no) a1
 		INNER JOIN
-				tm_point c
+				(SELECT d.player_no, SUM(c.goal) goal, SUM(c.assist) assist, COUNT(match_no) attempts FROM tm_point c INNER JOIN tm_player d ON c.player_no = d.player_no GROUP BY c.player_no) aa
 		ON
-				a1.player_no = c.player_no
+				a1.player_no = aa.player_no
 		WHERE
 				a1.club_no = #{no}
 		GROUP BY
 				a1.player_no
 		ORDER BY
-				assist DESC
+				assist DESC, attempts ASC, goal DESC
 		LIMIT
 				1
 	</select>
@@ -654,7 +657,7 @@
 	<!-- 클럽 상세 공격포인트 순위 -->
 	<select id="select_detail_club_pointlist" parameterType="map" resultType="map">
 		SELECT
-				a1.*, SUM(c.goal) goal, SUM(c.assist) assist, SUM(c.goal + c.assist) point
+				a1.*, aa.attempts, SUM(aa.goal) goal, SUM(aa.assist) assist, SUM(aa.goal + aa.assist) point
 		FROM (SELECT
 						a.club_no, a.player_no, a.player_name, a.country_no, b.country_name, a.player_age, a.player_position1, a.player_position2
 				 FROM
@@ -664,15 +667,15 @@
 				 ON
 						a.country_no = b.country_no) a1
 		INNER JOIN
-				tm_point c
+				(SELECT d.player_no, SUM(c.goal) goal, SUM(c.assist) assist, COUNT(match_no) attempts FROM tm_point c INNER JOIN tm_player d ON c.player_no = d.player_no GROUP BY c.player_no) aa
 		ON
-				a1.player_no = c.player_no
+				a1.player_no = aa.player_no
 		WHERE
 				a1.club_no = #{no}
 		GROUP BY
 				a1.player_no
 		ORDER BY
-				point DESC; 
+				point DESC, attempts DESC, goal DESC, assist DESC
 	</select>
 	
 	<!-- 감독 상세 -->
@@ -693,6 +696,40 @@
 				tm_agent
 		WHERE
 				agent_no = #{no}
+	</select>
+	
+	<!-- 리그 경기일정 전체 -->
+	<select id="select_detail_matchlist" parameterType="map" resultType="map">
+		SELECT
+				 aa.match_no, aa.league_no, aa.match_date, DATE_FORMAT(aa.match_kickoff, '%H:%i') match_kickoff, aa.match_home, aa.club_name home_name, bb.match_away, bb.club_name away_name
+		FROM
+				(SELECT
+						a.match_date, a.match_kickoff, a.match_home, b.club_name, a.match_no, a.league_no
+				 FROM
+				 		tm_match a
+				 INNER JOIN
+				 		tm_club b
+				 ON
+				 		a.match_home = b.club_no
+				 WHERE
+				 		a.league_no = #{no}
+				 ORDER BY
+				 		a.match_date ASC, a.match_kickoff ASC) aa
+		INNER JOIN
+				(SELECT
+						c.match_away, d.club_name, c.match_no
+				 FROM
+				 		tm_match c
+				 INNER JOIN
+				 		tm_club d
+				 ON
+				 		c.match_away = d.club_no
+				 ORDER BY
+				 		c.match_date ASC, c.match_kickoff ASC) bb
+		ON
+				 aa.match_no = bb.match_no
+		ORDER BY
+				 aa.match_date ASC, aa.match_kickoff ASC
 	</select>
 	
 	<!-- 리그 경기일정 상세 매치정보 -->

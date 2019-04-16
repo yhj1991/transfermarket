@@ -167,6 +167,9 @@
 						</table>
 					</div>
 				</div>
+				<div class="chart-container">
+					<canvas id="myChart"></canvas>
+				</div>
 			</c:if>
 		
 			<c:if test="${!empty param.menu}">

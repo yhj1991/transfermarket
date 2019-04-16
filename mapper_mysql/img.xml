@@ -108,4 +108,30 @@
 				formation_name = #{formation}
 	</select>
 	
+	<!-- 팀 이미지 -->
+	<resultMap id="team_img_map" type="map">
+		<result property="team_filedata" column="team_filedata" jdbcType="BLOB" javaType="[B"/>
+	</resultMap>
+	<select id="select_team_img" parameterType="map" resultMap="team_img_map">
+		SELECT 
+				team_filedata 
+		FROM 
+				tm_team
+		WHERE
+				team_no = #{no}
+	</select>
+	
+	<!-- 회원 이미지 -->
+	<resultMap id="mem_img_map" type="map">
+		<result property="mem_filedata" column="mem_filedata" jdbcType="BLOB" javaType="[B"/>
+	</resultMap>
+	<select id="select_mem_img" parameterType="map" resultMap="mem_img_map">
+		SELECT 
+				mem_filedata
+		FROM 
+				tm_member_info
+		WHERE
+				mem_id = #{id}
+	</select>
+	
 </mapper>

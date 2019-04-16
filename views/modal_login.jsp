@@ -24,7 +24,8 @@
 				<div class="modal-footer" style="display:inline;">
 					<div style="float:left; padding:0px" id="login_modal_footer">
 						<a href="#" id="find_member"><span style="font-size:small;">아이디찾기</span></a>
-						<a href="#" style="margin-left:40px;" id="general_text"><span style="font-size:small;">일반회원</span></a>
+						<a href="#" style="margin-left:40px;" id="general_text1"><span style="font-size:small;">일반회원(차단확인용)</span></a>
+						<a href="#" style="margin-left:40px;" id="general_text2"><span style="font-size:small;">일반회원</span></a>
 						<a href="#" style="margin-left:10px;" id="admin_text"><span style="font-size:small;">관리자</span></a>
 					</div>
 					<div style="float:right;">
@@ -124,16 +125,22 @@ $(function(){
 		},'json');
 	});
 	
-	$('#general_text').click(function(){
+	$('#general_text1').click(function(){
 		$('#login_id').attr('value', 'test');
 		$('#login_pw').attr('value', '1');
-		$('#login_btn').click();
+		// $('#login_btn').click();
+	});
+	
+	$('#general_text2').click(function(){
+		$('#login_id').attr('value', 'member');
+		$('#login_pw').attr('value', '1');
+		// $('#login_btn').click();
 	});
 	
 	$('#admin_text').click(function(){
 		$('#login_id').attr('value', 'admin');
 		$('#login_pw').attr('value', '1');
-		$('#login_btn').click();
+		// $('#login_btn').click();
 	});
 });
 </script>

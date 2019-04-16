@@ -16,19 +16,29 @@
 
 <div style="height:10px"></div>
 
-<div class="container">
-	<div class="form-inline" align="center">
-	<c:forEach var="category" items="${category}">
-		<div class="col-sm-2">
-			<div>
-				<a href="${pageContext.request.contextPath}/detail/continent.do?no=${category.continent_no}">
-					<img src="${pageContext.request.contextPath}/img/continent_img.do?no=${category.continent_no}" style="width:65px; height:65px" alt="${category.continent_name}" />
-				</a>
-			</div>
-			<div style="margin-top:3px"><span style="font-weight:bold;">${category.continent_name}</span></div>
-		</div>
-	</c:forEach>
-	</div>
+<div class="container" style="padding:0px">
+	<table class="table table-dark table-bordered">
+			<tr>
+				<c:forEach var="category" items="${category}">
+					<td align="center">
+						<a href="${pageContext.request.contextPath}/detail/continent.do?no=${category.continent_no}">
+							<img src="${pageContext.request.contextPath}/img/continent_img.do?no=${category.continent_no}" style="width:65px; height:65px" alt="${category.continent_name}" />
+						</a>
+					</td>
+				</c:forEach>
+			</tr>
+			<tr>
+				<c:forEach var="category" items="${category}">
+					<td align="center" class="${category.continent_no == param.no ? 'continent_active' : ''}">
+						<div style="margin-top:3px">
+							<a href="${pageContext.request.contextPath}/detail/continent.do?no=${category.continent_no}">
+								<span style="font-weight:bold;">${category.continent_name}</span>
+							</a>
+						</div>
+					</td>
+				</c:forEach>
+			</tr>
+	</table>
 </div>
 
 <hr />
@@ -168,7 +178,7 @@
 									<tr>
 										<td style="font-size:small;">
 											<img src="${pageContext.request.contextPath}/img/club_img.do?no=${mv.club_no}" style="margin-right:5px; width:18px; height:24px;" />
-												<a href="${pageContext.request.contextPath}/detail/club.do?no=${mv.club_no}" style="color:white;">${mv.club_name}</a>
+											<a href="${pageContext.request.contextPath}/detail/club.do?no=${mv.club_no}" style="color:white;">${mv.club_name}</a>
 										</td>
 									</tr>
 								</table>
@@ -192,7 +202,19 @@
 			<table class="table table-sm table-dark" style="height:330px">
 				<thead>
 					<tr>
-						<th colspan="4" style="text-align:center;">수페르리가 엘라다 경기일정</th>
+						<th colspan="4" style="text-align:center;">
+							<img src="${pageContext.request.contextPath}/img/league_img.do?no=9" style="margin-right:5px; width:18px; height:24px" />
+							<span>수페르리가 엘라다 경기일정</span>
+						</th>
+					</tr>
+					<tr>
+						<td colspan="4">
+							<div style="float:left; width:5px; height:5px">
+							</div>
+							<div style="float:right;">
+								<a href="${pageContext.request.contextPath}/detail/league.do?no=9" style="font-size:small;">전체일정</a>
+							</div>
+						</td>
 					</tr>
 					<tr>
 						<td style="text-align:center; font-size:small; width:15%">경기일</td>
@@ -205,19 +227,21 @@
 					<c:forEach var="s_greece" items="${schedule_greece}">
 						<tr style="height:40px">
 							<td style="text-align:center;">${s_greece.match_date}</td>
-								<td style="text-align:center;">
-									<a href="${pageContext.request.contextPath}/detail/club.do?no=${s_greece.match_home}" style="color:white;">
-										<img src="${pageContext.request.contextPath}/img/club_img.do?no=${s_greece.match_home}" style="width:18px; height:24px;"/>
-										<span style="font-size:small; margin-left:3px">${s_greece.home_name}</span>
-									</a>
-								</td>
-							<td style="text-align:center;"><a href="${pageContext.request.contextPath}/detail/match.do?no=${s_greece.match_no}">${s_greece.match_kickoff}</a></td>
-								<td style="text-align:center;">
-									<a href="${pageContext.request.contextPath}/detail/club.do?no=${s_greece.match_away}" style="color:white;">
-										<img src="${pageContext.request.contextPath}/img/club_img.do?no=${s_greece.match_away}" style="width:18px; height:24px;"/>
-										<span style="font-size:small; margin-left:3px">${s_greece.away_name}</span>
-									</a>
-								</td>
+							<td style="text-align:center;">
+								<a href="${pageContext.request.contextPath}/detail/club.do?no=${s_greece.match_home}" style="color:white;">
+									<img src="${pageContext.request.contextPath}/img/club_img.do?no=${s_greece.match_home}" style="width:18px; height:24px;"/>
+									<span style="font-size:small; margin-left:3px">${s_greece.home_name}</span>
+								</a>
+							</td>
+							<td style="text-align:center;">
+								<a href="${pageContext.request.contextPath}/detail/match.do?no=${s_greece.match_no}">${s_greece.match_kickoff}</a>
+							</td>
+							<td style="text-align:center;">
+								<a href="${pageContext.request.contextPath}/detail/club.do?no=${s_greece.match_away}" style="color:white;">
+									<img src="${pageContext.request.contextPath}/img/club_img.do?no=${s_greece.match_away}" style="width:18px; height:24px;"/>
+									<span style="font-size:small; margin-left:3px">${s_greece.away_name}</span>
+								</a>
+							</td>
 						</tr>
 					</c:forEach>
 				</tbody>
@@ -287,12 +311,15 @@
 			<table class="table table-sm table-dark">
 				<thead>
 					<tr>
-						<th colspan="4" style="text-align:center;"><img src="${pageContext.request.contextPath}/img/league_img.do?no=6" style="margin-right:5px; width:18px; height:24px" />잉글랜드 프리미어 리그 경기일정</th>
+						<th colspan="4" style="text-align:center;">
+							<img src="${pageContext.request.contextPath}/img/league_img.do?no=6" style="margin-right:5px; width:18px; height:24px" />
+							<span>잉글랜드 프리미어 리그 경기일정</span>
+						</th>
 					</tr>
 					<tr>
 						<td colspan="4">
 							<div style="float:right;">
-								<a href="#전체일정EPL" style="font-size:small;">전체일정</a>
+								<a href="${pageContext.request.contextPath}/detail/league.do?no=6" style="font-size:small;">전체일정</a>
 							</div>
 						</td>
 					</tr>
@@ -307,21 +334,21 @@
 					<c:forEach var="s_epl" items="${schedule_epl}">
 						<tr style="height:40px">
 							<td style="text-align:center;">${s_epl.match_date}</td>
-								<td style="text-align:center;">
-									<a href="${pageContext.request.contextPath}/detail/club.do?no=${s_epl.match_home}" style="color:white;">
-										<img src="${pageContext.request.contextPath}/img/club_img.do?no=${s_epl.match_home}" style="width:18px; height:24px;"/>
-										<span style="font-size:small; margin-left:3px">${s_epl.home_name}</span>
-									</a>
-								</td>
-								<td style="text-align:center;">
-									<a href="${pageContext.request.contextPath}/detail/match.do?no=${s_epl.match_no}">${s_epl.match_kickoff}</a>
-								</td>
-								<td style="text-align:center;">
-									<a href="${pageContext.request.contextPath}/detail/club.do?no=${s_epl.match_away}" style="color:white;">
-										<img src="${pageContext.request.contextPath}/img/club_img.do?no=${s_epl.match_away}" style="width:18px; height:24px;"/>
-										<span style="font-size:small; margin-left:3px">${s_epl.away_name}</span>
-									</a>
-								</td>
+							<td style="text-align:center;">
+								<a href="${pageContext.request.contextPath}/detail/club.do?no=${s_epl.match_home}" style="color:white;">
+									<img src="${pageContext.request.contextPath}/img/club_img.do?no=${s_epl.match_home}" style="width:18px; height:24px;"/>
+									<span style="font-size:small; margin-left:3px">${s_epl.home_name}</span>
+								</a>
+							</td>
+							<td style="text-align:center;">
+								<a href="${pageContext.request.contextPath}/detail/match.do?no=${s_epl.match_no}">${s_epl.match_kickoff}</a>
+							</td>
+							<td style="text-align:center;">
+								<a href="${pageContext.request.contextPath}/detail/club.do?no=${s_epl.match_away}" style="color:white;">
+									<img src="${pageContext.request.contextPath}/img/club_img.do?no=${s_epl.match_away}" style="width:18px; height:24px;"/>
+									<span style="font-size:small; margin-left:3px">${s_epl.away_name}</span>
+								</a>
+							</td>
 						</tr>
 					</c:forEach>
 				</tbody>
@@ -332,7 +359,10 @@
 			<table class="table table-sm table-dark">
 				<thead>
 					<tr>
-						<th colspan="7" style="text-align:center;"><img src="${pageContext.request.contextPath}/img/league_img.do?no=6" style="margin-right:5px; width:18px; height:24px" />잉글랜드 프리미어 리그</th>
+						<th colspan="7" style="text-align:center;">
+							<img src="${pageContext.request.contextPath}/img/league_img.do?no=6" style="margin-right:5px; width:18px; height:24px" />
+							<span>잉글랜드 프리미어 리그</span>
+						</th>
 					</tr>
 					<tr>
 						<td colspan="7">
@@ -382,14 +412,17 @@
 			<table class="table table-sm table-dark">
 				<thead>
 					<tr>
-						<th colspan="4" style="text-align:center;"><img src="${pageContext.request.contextPath}/img/league_img.do?no=17" style="margin-right:5px; width:18px; height:24px" />스페인 프리메라리가 경기일정</th>
+						<th colspan="4" style="text-align:center;">
+							<img src="${pageContext.request.contextPath}/img/league_img.do?no=17" style="margin-right:5px; width:18px; height:24px" />
+							<span>스페인 프리메라리가 경기일정</span>
+						</th>
 					</tr>
 					<tr>
 						<td colspan="4">
 							<div style="float:left; width:5px; height:5px">
 							</div>
 							<div style="float:right;">
-								<a href="#전체일정라리가" style="font-size:small;">전체일정</a>
+								<a href="${pageContext.request.contextPath}/detail/league.do?no=17" style="font-size:small;">전체일정</a>
 							</div>
 						</td>
 					</tr>
@@ -404,21 +437,21 @@
 					<c:forEach var="s_laliga" items="${schedule_laliga}">
 						<tr style="height:40px">
 							<td style="text-align:center;">${s_laliga.match_date}</td>
-								<td style="text-align:center;">
-									<a href="${pageContext.request.contextPath}/detail/club.do?no=${s_laliga.match_home}" style="color:white;">
-										<img src="${pageContext.request.contextPath}/img/club_img.do?no=${s_laliga.match_home}" style="width:18px; height:24px;"/>
-										<span style="font-size:small; margin-left:3px">${s_laliga.home_name}</span>
-									</a>
-								</td>
-								<td style="text-align:center;">
-									<a href="${pageContext.request.contextPath}/detail/match.do?no=${s_laliga.match_no}">${s_laliga.match_kickoff}</a>
-								</td>
-								<td style="text-align:center;">
-									<a href="${pageContext.request.contextPath}/detail/club.do?no=${s_laliga.match_away}" style="color:white;">
-										<img src="${pageContext.request.contextPath}/img/club_img.do?no=${s_laliga.match_away}" style="width:18px; height:24px;"/>
-										<span style="font-size:small; margin-left:3px">${s_laliga.away_name}</span>
-									</a>
-								</td>
+							<td style="text-align:center;">
+								<a href="${pageContext.request.contextPath}/detail/club.do?no=${s_laliga.match_home}" style="color:white;">
+									<img src="${pageContext.request.contextPath}/img/club_img.do?no=${s_laliga.match_home}" style="width:18px; height:24px;"/>
+									<span style="font-size:small; margin-left:3px">${s_laliga.home_name}</span>
+								</a>
+							</td>
+							<td style="text-align:center;">
+								<a href="${pageContext.request.contextPath}/detail/match.do?no=${s_laliga.match_no}">${s_laliga.match_kickoff}</a>
+							</td>
+							<td style="text-align:center;">
+								<a href="${pageContext.request.contextPath}/detail/club.do?no=${s_laliga.match_away}" style="color:white;">
+									<img src="${pageContext.request.contextPath}/img/club_img.do?no=${s_laliga.match_away}" style="width:18px; height:24px;"/>
+									<span style="font-size:small; margin-left:3px">${s_laliga.away_name}</span>
+								</a>
+							</td>
 						</tr>
 					</c:forEach>
 				</tbody>
@@ -479,14 +512,17 @@
 			<table class="table table-sm table-dark">
 				<thead>
 					<tr>
-						<th colspan="4" style="text-align:center;"><img src="${pageContext.request.contextPath}/img/league_img.do?no=10" style="margin-right:5px; width:18px; height:24px" />이탈리아 세리에 A 경기일정</th>
+						<th colspan="4" style="text-align:center;">
+							<img src="${pageContext.request.contextPath}/img/league_img.do?no=10" style="margin-right:5px; width:18px; height:24px" />
+							<span>이탈리아 세리에 A 경기일정</span>
+						</th>
 					</tr>
 					<tr>
 						<td colspan="4">
 							<div style="float:left; width:5px; height:5px">
 							</div>
 							<div style="float:right;">
-								<a href="#전체일정세리에" id="total_seria_match" style="font-size:small;">전체일정</a>
+								<a href="${pageContext.request.contextPath}/detail/league.do?no=10" id="total_seria_match" style="font-size:small;">전체일정</a>
 							</div>
 						</td>
 					</tr>
@@ -501,21 +537,21 @@
 					<c:forEach var="s_seria" items="${schedule_seria}">
 						<tr style="height:40px">
 							<td style="text-align:center;">${s_seria.match_date}</td>
-								<td style="text-align:center;">
-									<a href="${pageContext.request.contextPath}/detail/club.do?no=${s_seria.match_home}" style="color:white;">
-										<img src="${pageContext.request.contextPath}/img/club_img.do?no=${s_seria.match_home}" style="width:18px; height:24px;"/>
-										<span style="font-size:small; margin-left:3px">${s_seria.home_name}</span>
-									</a>
-								</td>
-								<td style="text-align:center;">
-									<a href="${pageContext.request.contextPath}/detail/match.do?no=${s_seria.match_no}">${s_seria.match_kickoff}</a>
-								</td>
-								<td style="text-align:center;">
-									<a href="${pageContext.request.contextPath}/detail/club.do?no=${s_seria.match_away}" style="color:white;">
-										<img src="${pageContext.request.contextPath}/img/club_img.do?no=${s_seria.match_away}" style="width:18px; height:24px;"/>
-										<span style="font-size:small; margin-left:3px">${s_seria.away_name}</span>
-									</a>
-								</td>
+							<td style="text-align:center;">
+								<a href="${pageContext.request.contextPath}/detail/club.do?no=${s_seria.match_home}" style="color:white;">
+									<img src="${pageContext.request.contextPath}/img/club_img.do?no=${s_seria.match_home}" style="width:18px; height:24px;"/>
+									<span style="font-size:small; margin-left:3px">${s_seria.home_name}</span>
+								</a>
+							</td>
+							<td style="text-align:center;">
+								<a href="${pageContext.request.contextPath}/detail/match.do?no=${s_seria.match_no}">${s_seria.match_kickoff}</a>
+							</td>
+							<td style="text-align:center;">
+								<a href="${pageContext.request.contextPath}/detail/club.do?no=${s_seria.match_away}" style="color:white;">
+									<img src="${pageContext.request.contextPath}/img/club_img.do?no=${s_seria.match_away}" style="width:18px; height:24px;"/>
+									<span style="font-size:small; margin-left:3px">${s_seria.away_name}</span>
+								</a>
+							</td>
 						</tr>
 					</c:forEach>
 				</tbody>
@@ -526,7 +562,10 @@
 			<table class="table table-sm table-dark">
 				<thead>
 					<tr>
-						<th colspan="7" style="text-align:center;"><img src="${pageContext.request.contextPath}/img/league_img.do?no=10" style="margin-right:5px; width:18px; height:24px" />이탈리아 세리에 A</th>
+						<th colspan="7" style="text-align:center;">
+							<img src="${pageContext.request.contextPath}/img/league_img.do?no=10" style="margin-right:5px; width:18px; height:24px" />
+							<span>이탈리아 세리에 A</span>
+						</th>
 					</tr>
 					<tr>
 						<td colspan="7">
@@ -582,6 +621,7 @@
 							<a href="#" id="next1" style="color:white; margin-left:10px">&#62;</a>
 						</th>
 					</tr>
+					<!-- 
 					<tr>
 						<td colspan="4">
 							<div style="float:left; width:5px; height:5px">
@@ -591,6 +631,7 @@
 							</div>
 						</td>
 					</tr>
+					 -->
 					<tr>
 						<td style="text-align:center; font-size:small; width:15%">경기일</td>
 						<td style="text-align:center; font-size:small; width:40%">홈</td>
@@ -631,6 +672,7 @@
 							<a href="#" id="next2" style="color:white; margin-left:10px">&#62;</a>
 						</th>
 					</tr>
+					<!-- 
 					<tr>
 						<td colspan="7">
 							<div style="float:left; width:5px; height:5px">
@@ -640,6 +682,7 @@
 							</div>
 						</td>
 					</tr>
+					 -->
 					<tr>
 						<td style="text-align:center; font-size:small; width:9%">순위</td>
 						<td style="text-align:center; font-size:small; width:43%">클럽</td>

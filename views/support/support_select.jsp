@@ -32,7 +32,8 @@
 					<div class="col">
 						<a href="main.do" class="btn btn-outline-light btn-sm" style="margin-right:10px;">게시판 홈</a>
 						<c:if test="${prev != 0}">
-							<a href="${pageContext.request.contextPath}/support/select.do?no=${prev}" class="btn btn-outline-light btn-sm" style="margin-right:5px;">이전글</a>
+							<a href="${pageContext.request.contextPath}/support/select.do?no=${prev}" class="btn btn-outline-light btn-sm"
+								 style="margin-right:5px;">이전글</a>
 						</c:if>
 						<c:if test="${next != 0}">
 							<a href="${pageContext.request.contextPath}/support/select.do?no=${next}" class="btn btn-outline-light btn-sm">다음글</a>
@@ -41,7 +42,8 @@
 					<div class="col" align="right">
 						<c:if test="${sec_id eq support.support_writer}">
 							<a href="${pageContext.request.contextPath}/support/update.do?no=${support.support_no}" class="btn btn-outline-light btn-sm">수정</a>
-							<a href="${pageContext.request.contextPath}/support/delete.do?no=${support.support_no}" class="btn btn-outline-light btn-sm" style="margin-left:10px" onclick="confirm('정말 삭제하시겠습니까?')">삭제</a>
+							<a href="${pageContext.request.contextPath}/support/delete.do?no=${support.support_no}" class="btn btn-outline-light btn-sm" 
+								style="margin-left:10px" onclick="confirm('정말 삭제하시겠습니까?')">삭제</a>
 						</c:if>
 					</div>
 				</div>
@@ -105,6 +107,7 @@
 						<table class="table table-borderless table-dark comment_table" style="margin:auto; table-layout:fixed;">
 							<tr>
 								<td colspan="2" style="padding-bottom:0px; padding-top:0px">
+								<label style="width:${comment.comment_depth * 25}px;"></label>
 									${comment.comment_depth > 0 ? '&nbsp;&nbsp;└>':''}
 									<input type="hidden" class="comment_no" value="${comment.comment_no}" />
 									<input type="hidden" class="comment_depth" value="${comment.comment_depth}" />
@@ -112,25 +115,36 @@
 									<span style="margin-left:10px;">${comment.comment_date}</span>
 									<sec:authorize access="isAuthenticated()">
 										<span style="margin-left:10px;">
-											<a href="#" class="recomment_btn">답댓글</a>
-											<c:if test="${sec_id eq comment.comment_writer}">
-												/ <a href="#" class="recomment_update_btn">수정</a>
-												/ <a href="#" class="recomment_delete_btn">삭제</a>
+											<c:if test="${comment.comment_del == 1}">
+												<a href="#" class="recomment_btn">답댓글</a>
+												<c:if test="${sec_id eq comment.comment_writer}">
+													/ <a href="#" class="comment_update" value="${comment.comment_no}" >수정</a>
+													/ <a href="#" class="comment_delete" value="${comment.comment_no}" >삭제</a>
+												</c:if>
 											</c:if>
 										</span>
 									</sec:authorize>
 								</td>
 							</tr>
-							<tr>
-								<td colspan="2" style="overflow:hidden; word-wrap:break-word;">
-								<c:if test="${comment.comment_depth == 0}">
-									<span>${comment.comment_text}</span>
+							<tr id="comment_tr_${comment.comment_no}">
+								<c:if test="${comment.comment_del == 0}">
+									<td colspan="2" style="overflow:hidden; word-wrap:break-word;">
+										<label style="width:${comment.comment_depth * 25}px;"></label>
+										<span style="margin-left:10px;" id="comment_text_${comment.comment_no}">삭제된 댓글입니다.</span>
+									</td>
 								</c:if>
-								<c:if test="${comment.comment_depth > 0}">
-									<span style="font-weight:bold; margin-left:28px;">${comment.parent_writer}</span>
-									<span style="margin-left:10px;">${comment.comment_text}</span>
+								<c:if test="${comment.comment_del == 1}">
+									<td colspan="2" style="overflow:hidden; word-wrap:break-word;">
+									<c:if test="${comment.comment_depth == 0}">
+										<span>${comment.comment_text}</span>
+									</c:if>
+									<c:if test="${comment.comment_depth > 0}">
+										<label style="width:${comment.comment_depth * 25}px;"></label>
+										<span style="font-weight:bold; margin-left:28px;">${comment.parent_writer}</span>
+										<span style="margin-left:10px;" id="comment_text_${comment.comment_no}">${comment.comment_text}</span>
+									</c:if>
+									</td>
 								</c:if>
-								</td>
 							</tr>
 						</table>
 					</td>
@@ -139,14 +153,22 @@
 			</c:if>
 			<sec:authorize access="isAnonymous()">
 			<tr>
-				<td><textarea class="form-control" style="height:50px; resize:none;" id="comment_text1" name="comment" placeholder="댓글을 입력하세요" readonly></textarea></td>
+				<td>
+					<textarea class="form-control" style="height:50px; resize:none;" id="comment_text1" name="comment" placeholder="댓글을 입력하세요" readonly>
+					</textarea>
+				</td>
 				<td style="width:10%; text-align:center; vertical-align:middle;"></td>
 			</tr>
 			</sec:authorize>
 			<sec:authorize access="isAuthenticated()">
 			<tr>
-				<td><textarea class="form-control" style="height:50px; resize:none;" id="comment_text2" name="comment" placeholder="댓글을 입력하세요"></textarea></td>
-				<td style="width:10%; text-align:center; vertical-align:middle;"><input type="button" class="btn btn-outline-light" id="comment_insert_btn" value="등록" /></td>
+				<td>
+					<textarea class="form-control" style="height:50px; resize:none;" id="comment_text2" name="comment" placeholder="댓글을 입력하세요">
+					</textarea>
+				</td>
+				<td style="width:10%; text-align:center; vertical-align:middle;">
+					<input type="button" class="btn btn-outline-light" id="comment_insert_btn" value="등록" />
+				</td>
 			</tr>
 			</sec:authorize>
 		</tbody>
@@ -211,7 +233,7 @@ $(function(){
 			var parw = $('.comment_writer').eq(idx).text();
 			var depth = $('.comment_depth').eq(idx).val();
 			$.post('rest_insert_recomment.json', {supno : supno, text : text, parno : parno, parw : parw, depth : depth}, function(data){
-				if(data == 1){
+				if(data.ret == 1){
 					alert('댓글이 등록되었습니다.');
 					window.location.reload();
 				}
@@ -224,6 +246,55 @@ $(function(){
 			$(this).parent().parent().remove();
 		});
 	});
+	
+	// 댓글 수정
+	$(document).on('click', '.comment_update', function(){
+		event.preventDefault();
+		var comno = $(this).attr('value');
+		var supno = $('#support_no').text();
+		var no = $(this).attr('value');
+		var text = $('#comment_text_' + comno).text();
+		$('#comment_tr_' + comno).empty();
+		$('#comment_tr_' + comno).append(
+			'<td colspan="2" style="padding-right:0px">'+
+				'<div class="form-inline">'+
+					'<textarea class="form-control" style="width:90%; height:50px; resize:none;" id="comment_text" placeholder="댓글을 입력하세요">' + text + '</textarea>'+
+					'<input type="button" class="btn btn-outline-light btn-sm" style="margin-left:10px;" id="comment_update_btn" value="수정" />'+
+					'<input type="button" class="btn btn-outline-light btn-sm" style="margin-left:5px;" id="comment_close_btn" value="취소" />'+
+				'</div>'+
+			'</td>'
+		);
+		
+		// 댓글 수정 등록
+		$(document).on('click', '#comment_update_btn', function(){
+			var utext = $('#comment_text').val();
+			$.post('rest_update_comment.json', {supno : supno, no : no, utext : utext}, function(data){
+				if(data.ret == 1){
+					alert('댓글이 수정되었습니다.');
+					window.location.reload();
+				}
+			});
+		})
+		
+		// 댓글 수정취소
+		$('#comment_close_btn').click(function(){
+			window.location.reload();
+		});
+		
+	});
+	
+	// 댓글 삭제
+	$(document).on('click', '.comment_delete', function(){
+		event.preventDefault();
+		var supno = $('#support_no').text();
+		var no = $(this).attr('value');
+		$.post('rest_delete_comment.json', {supno : supno, no : no}, function(data){
+			if(data.ret == 1){
+				alert('댓글이 삭제되었습니다.');
+				window.location.reload();
+			}
+		});
+	})
 	
 });
 </script>

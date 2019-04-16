@@ -218,7 +218,6 @@ public class RestAdminController {
 			TmMatch.createMatch(jobj, matchdate, kickoff);
 			sendMap.put("league", leagueno);
 			int cnt = adminDAO.selectMatch(sendMap);
-			System.out.println(cnt);
 			if(cnt == 0) {
 				sendMap.put("kickoff", TmMatch.getKickoffList());
 				sendMap.put("home", TmMatch.getHomeList());
@@ -236,4 +235,5 @@ public class RestAdminController {
 		}
 		return sendMap;
 	}
+	
 }

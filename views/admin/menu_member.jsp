@@ -13,7 +13,7 @@
 <table class="table table-sm table-dark" id="">
 	<c:if test="${empty member.list}">
 		<tr>
-			<td colspan="${param.detail != 3 ? '9' : '10'}" style="text-align: center;">${param.detail != 3 ? '등록(신청)' : '차단'}된 회원이 없습니다.</td>
+			<td colspan="${param.detail != 3 ? '9' : '10'}" style="text-align: center;">${param.detail != 3 ? '가입신청' : '차단'}중인 회원이 없습니다.</td>
 		</tr>
 	</c:if>
 	
@@ -51,7 +51,7 @@
 				</c:choose>
 				<th style="text-align: center; width:5%">등급</th>
 				<th style="text-align: center; width:5%">상태</th> 
-				<th style="text-align: center; width:5%">차단</th>
+				<th style="text-align: center; width:5%">${param.detail == 4 ? '승인' : '차단'}</th>
 			</tr>
 		</thead>
 		<tbody id="memberlist_tbody">
@@ -74,14 +74,14 @@
 					<td style="text-align: center;">${list.authority}</td>
 					<td style="text-align: center;">
 						<c:if test="${list.enabled eq 1}">일반</c:if>
-						<c:if test="${list.enabled ne 1}">차단</c:if>
+						<c:if test="${list.enabled ne 1}">${param.detail == 4 ? '미승인' : '차단'}</c:if>
 					</td>
 					<td style="text-align: center;">
 						<c:if test="${list.enabled eq 1}">
 							<input type="button" class="btn btn-light btn-sm admin_member_btn" value="차단" />
 						</c:if>
 						<c:if test="${list.enabled ne 1}">
-							<input type="button" class="btn btn-light btn-sm admin_member_btn" value="해제" />
+							<input type="button" class="btn btn-light btn-sm admin_member_btn" value="${param.detail == 4 ? '승인' : '해제'}" />
 						</c:if>
 					</td>
 				</tr>

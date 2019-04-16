@@ -9,10 +9,9 @@
 }
 
 </style>
-<c:if test="${param.detail == 1}">
-	<div class="container">
+<div class="container">
+	<c:if test="${param.detail == 1}">
 		<h3 style="text-align:center;">경기일정 관리 (리그)</h3>
-		
 		<table class="table table-dark table-bordered match_table" style="margin-top:30px">
 			<tr>
 				<td colspan="3"><input type="button" class="btn btn-light form-control" id="insert_match_btn" value="일정생성" /></td>
@@ -78,27 +77,58 @@
 			</thead>
 			<tbody id="clubList_div"></tbody>
 		</table>
-	</div>
-</c:if>
+	</c:if>
 
-<c:if test="${param.detail == 2}">
-	<div class="container">
+	<c:if test="${param.detail == 2}">
+		<h3 style="text-align:center;">경기일정 관리 (챔피언스 리그)</h3>
+		<table class="table table-dark table-bordered match_table" style="margin-top:30px">
+			<tr>
+				<td colspan="2"><input type="button" class="btn btn-light form-control" id="insert_match_btn" value="일정생성" /></td>
+			</tr>
+			<tr>
+				<th style="font-weight:bold; font-size:small;">그룹별 조회</th>
+				<th style="font-weight:bold; font-size:small;">국가</th>
+			</tr>
+			<tr>
+				<td style="width:33%">
+					<select id="groupList" class="form-control form-control-sm continent" style="margin-top:3px">
+		 				<option selected disabled>ChampionsLeague Group</option>
+		 				<option value="0">All Group</option>
+		 				<c:forEach var="group" items="${champs.groupList}">
+	 						<option value="${group.champs_group}">${group.champs_group}</option>
+		 				</c:forEach>
+		 			</select>
+				</td>
+				<td style="width:33%">
+					<select id="countryList" class="form-control form-control-sm">
+						<option value="0">Country</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<th style="font-weight:bold; font-size:small;">시즌 개막일</th>
+				<th style="font-weight:bold; font-size:small;">시즌 개막시간</th>
+			</tr>
+			<tr>
+				<td><input type="date" id="matchdate" class="form-control form-control-sm" /></td>
+				<td>
+					<select id="kickoff" class="form-control form-control-sm" >
+						<option value="0">개막시간</option>
+						<option value="03:00">03:00</option>
+						<option value="03:30">03:30</option>
+						<option value="05:00">05:00</option>
+						<option value="05:30">05:30</option>
+						<option value="20:00">20:00</option>
+						<option value="20:30">20:30</option>
+					</select>
+				</td>
+			</tr>
+		</table>
+		
 		<table class="table table-dark table-bordered match_table" style="margin-top:30px">
 			<thead>
 				<tr>
-					<th rowspan="2" colspan="2" style="text-align:left; font-size:xx-large;">클럽목록</th>
-				</tr>
-				<tr>
-					<td colspan="2">
-						<span style="font-weight:bold; font-size:small; vertical-align:middle;">그룹별 조회</span>
-						<select id="groupList" class="form-control form-control-sm continent" style="margin-top:3px">
-			 				<option selected disabled>ChampionsLeague Group</option>
-			 				<option value="0">All Group</option>
-			 				<c:forEach var="group" items="${champs.groupList}">
-		 						<option value="${group.champs_group}">${group.champs_group}</option>
-			 				</c:forEach>
-			 			</select>
-					</td>
+					<th colspan="4" style="text-align:left; font-size:xx-large;">클럽목록</th>
 				</tr>
 				<tr>
 					<th style="width:10%; font-weight:bold; font-size:small;">#</th>
@@ -131,8 +161,8 @@
 				</c:forEach>
 			</tbody>
 		</table>
-	</div>
-</c:if>
+	</c:if>
+</div>
 
 <script>
 $(function(){
@@ -187,7 +217,7 @@ $(function(){
 			);
 		}
 		else {
-			$.post('/tm/detail/rest_sb_countrylist.json', {no : no}, function(data){
+			$.post('${pageContext.request.contextPath}/detail/rest_sb_countrylist.json', {no : no}, function(data){
 				var len = data.countryList.length;
 				$('#countryList').empty();
 				$('#countryList').append(
@@ -204,7 +234,7 @@ $(function(){
 	
 	$('#countryList').change(function(){
 		var no = $(this).val();
-			$.post('/tm/detail/rest_sb_leaguelist.json', {no : no}, function(data){
+			$.post('${pageContext.request.contextPath}/detail/rest_sb_leaguelist.json', {no : no}, function(data){
 				var len = data.leagueList.length;
 				$('#leagueList').empty();
 				$('#leagueList').append(
@@ -225,7 +255,7 @@ $(function(){
 
 	$('#leagueList').change(function(){
 		var no = $(this).val();
-		$.post('/tm/detail/rest_sb_clublist.json', {no : no}, function(data){
+		$.post('${pageContext.request.contextPath}/detail/rest_sb_clublist.json', {no : no}, function(data){
 			var len = data.clubList.length;
 			$('#clubList_div').empty();
 			for(var i = 0; i < len/2; i++){
