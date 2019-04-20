@@ -123,12 +123,8 @@ $(function(){
 $(document).on('click', '.menu1', function(){
 	var idx = $(this).index('.menu1');
 	var id = $('.chat_users').eq(idx).text();
-	window.open("member_info.do?id=" + id, "test", "width=400,height=400" );
+	window.open("member_info.do?id=" + id, "info", "width=400,height=400" );
 });
-
-function openWin(f,s) { 
-	adWindow=window.open(f,s,'width=200,height=100,status=no,scrollbars=auto'); 
-} 
 
 $(document).on('click', '.menu2', function(){
 	var idx = $(this).index('.menu2');
@@ -136,7 +132,7 @@ $(document).on('click', '.menu2', function(){
 	var id = $('.chat_users').eq(idx).text();
 	// 사용자 ID
 	var user = '${id}';
-	var msg = '<a href="chat_user_to_user.do?id1=${id}&id2=' + id + '" style="color:black;" >${id}님의 1:1 대화요청!!</a>';
+	var msg = '<a href="chat_user_to_user.do?id1=${id}&id2=' + id + '" class="utou_btn" style="color:black;">${id}님의 1:1 대화요청!!</a>';
 	var obj = new Object();
 	obj.msg = msg;
 	obj.id = id;
@@ -144,9 +140,15 @@ $(document).on('click', '.menu2', function(){
 	message = new Paho.MQTT.Message(utou);
 	message.destinationName = "ds/class603/main/server";
 	client.send(message);
-	window.open("chat_user_to_user.do?id1=${id}&id2=" + id, "test", "width=400,height=400");
+	window.open("chat_user_to_user.do?id1=${id}&id2=" + id, "utou", "width=400,height=400");
 });
 
+
+$(document).on('click', '.utou_btn', function(){
+	event.preventDefault();
+	var href = $(this).attr('href');
+	window.open(href, "utou", "width=400,height=400");
+})
 </script>
 </body>
 </html>

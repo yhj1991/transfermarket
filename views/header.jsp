@@ -18,7 +18,7 @@
 <body>
 
 <!-- 최상단 NavBar -->
-<div id="nav" style="padding:0px; background-color:#084B8A; border-bottom:0.4px solid #eeeeee">
+<div id="nav" style="padding:0px; background-color:#084B8A;">
 	<div class="row justify-content-end" style="width:80%; height:40px;">
 		<a href="#" class="form-inline" id="login_admin" style="font-size:small; margin-right:15px; color:white;">관리자로그인</a>
 		
@@ -31,13 +31,13 @@
 		</sec:authorize>
 		
 		<a href="${pageContext.request.contextPath}/main.do" class="form-inline" style="font-size:small; margin-right:15px; color:white;">홈</a>
+		<a href="${pageContext.request.contextPath}/team/main.do" id="page_not_yet" class="form-inline" style="font-size:small; margin-right:15px; color:white;">아마추어</a>
 		<sec:authorize access="isAnonymous()">
-			<a href="#" class="form-inline" style="font-size:small; margin-right:15px; color:white;" id="login_modal_btn">로그인</a>
-			<a href="#" class="form-inline" style="font-size:small; margin-right:15px; color:white;" id="join_modal_btn">회원가입</a>
+			<a href="${pageContext.request.contextPath}/login.do" class="form-inline" style="font-size:small; margin-right:15px; color:white;">로그인</a>
+			<a href="${pageContext.request.contextPath}/join.do" class="form-inline" style="font-size:small; margin-right:15px; color:white;">회원가입</a>
 		</sec:authorize>
 		
 		<sec:authorize access="isAuthenticated()">
-			<%-- <a href="${pageContext.request.contextPath}/team/main.do" class="form-inline" style="font-size:small; margin-right:15px; color:white;">소속팀</a> --%>
 			<a href="${pageContext.request.contextPath}/logout.do" class="form-inline" style="font-size:small; margin-right:15px; color:white;">로그아웃</a>
 			<a href="${pageContext.request.contextPath}/mypage/main.do" class="form-inline" style="font-size:small; margin-right:15px; color:white;">마이페이지</a>
 		</sec:authorize>
@@ -50,15 +50,16 @@
 	</div>
 </div>
 
-<form id="form" action="${pageContext.request.contextPath}/login_post.do" method="post">
+<form id="form" action="${pageContext.request.contextPath}/login_post.do" method="post" style="display:none;">
 	<input type="hidden" name="id" id="login_click_id" value="" />
 	<input type="hidden" name="pw" id="login_click_pw" value="" />
 </form>
-
+<%-- 
 <jsp:include page="modal_login.jsp"></jsp:include>
-
+ --%>
+ <%-- 
 <jsp:include page="modal_join.jsp"></jsp:include>
-
+ --%>
 <script>
 $(function(){
 	// Navbar
@@ -97,6 +98,12 @@ $(function(){
 		$('#login_click_id').attr('value', 'admin');
 		$('#login_click_pw').attr('value', '1');
 		$('#form').submit();
+	});
+	
+	$('#page_not_yet').click(function(){
+		event.preventDefault();
+		alert('준비중인 페이지입니다.');
+		window.location.href = '${pageContext.request.contextPath}/main.do';
 	});
 });
 </script>

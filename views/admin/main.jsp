@@ -180,13 +180,11 @@
 
 <script>
 $(function(){
-	$(document).ready(function() {
-		var query = new URLSearchParams(window.location.search);
-		var menu = query.get('menu');
-		var detail = query.get('detail');
-		$('#'+menu).attr('class', 'collapse.show');
-		$('#'+menu+detail).attr('class', 'dropdown-item active');
-	});
+	var query = new URLSearchParams(window.location.search);
+	var menu = query.get('menu');
+	var detail = query.get('detail');
+	$('#'+menu).attr('class', 'collapse.show');
+	$('#'+menu+detail).attr('class', 'dropdown-item active');
 });
 </script>
 

@@ -2,43 +2,56 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page session="false" %>
 
-<!-- 로그인 Modal -->
-<form id="login_form" action="${pageContext.request.contextPath}/login_post.do" method="post" style="margin:auto;">
-	<div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel" aria-hidden="true">
-		<div class="modal-dialog" role="document">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title" id="loginModalLabel">로그인</h5>
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-						<span aria-hidden="true">&times;</span>
-					</button>
+<jsp:include page="header.jsp"></jsp:include>
+
+<div style="height:30px"></div>
+
+<div class="container" style="margin-top:50px;">
+	<form id="login_form" action="login_post.do" method="post">
+		<div class="row justify-content-center">
+			<div style="width:450px;" align="center">
+				<h1>TransferMarket</h1>
+				<div class="login_body" style="margin-top:50px;">
+					<input type="text" class="form-control" style="height:50px;" id="login_id" name="id" placeholder="아이디" />
+					<div style="height:20px"></div>
+					<input type="password" class="form-control" style="height:50px;" id="login_pw" name="pw" placeholder="비밀번호" />
+					<div style="height:20px"></div>
+					<input type="button" id="login_btn" style="height:50px;" class="btn btn-dark form-control" value="로그인" />
 				</div>
-				
-				<div class="modal-body" id="login_modal_body">
-					<input type="text" class="form-control" id="login_id" name="id" placeholder="아이디" />
-						<div style="height:10px"></div>
-					<input type="password" class="form-control" id="login_pw" name="pw" placeholder="비밀번호" />
-						<div style="height:10px"></div>
-					<input type="button" id="login_btn" class="btn btn-dark form-control" value="로그인" />
+				<div style="border:1px solid #eeeeee; margin-top:30px;"></div>
+				<div class="login_footer form-inline row justify-content-center" style="margin-top:10px;">
+					<a href="${pageContext.request.contextPath}/find_id.do">
+						<span style="font-size:small; color:black;">아이디찾기</span>
+					</a>
+					<span style="color:black; margin-left:10px; margin-right:10px;">│</span>
+					<a href="${pageContext.request.contextPath}/join.do">
+						<span style="font-size:small; color:black;">회원가입</span>
+					</a>
 				</div>
-				<div class="modal-footer" style="display:inline;">
-					<div style="float:left; padding:0px" id="login_modal_footer">
-						<a href="#" id="find_member"><span style="font-size:small;">아이디찾기</span></a>
-						<a href="#" style="margin-left:40px;" id="general_text1"><span style="font-size:small;">일반회원(차단확인용)</span></a>
-						<a href="#" style="margin-left:40px;" id="general_text2"><span style="font-size:small;">일반회원</span></a>
-						<a href="#" style="margin-left:10px;" id="admin_text"><span style="font-size:small;">관리자</span></a>
-					</div>
-					<div style="float:right;">
-						<button type="button" class="btn btn-secondary" id="login_modal_close" data-dismiss="modal">닫기</button>
-					</div>
+				<div style="border:1px solid #eeeeee; margin-top:20px;"></div>
+				<div style="height:20px;"></div>
+				<span style="text-align:center;font-size:small;">빠른 로그인 버튼</span>
+				<div class="login_footer form-inline row justify-content-center" style="margin-top:10px;">
+					<a href="#" id="general_text1">
+						<span style="font-size:small; color:black;">일반회원(차단회원)</span>
+					</a>
+					<span style="color:black; margin-left:10px; margin-right:10px;">│</span>
+					<a href="#" id="general_text2">
+						<span style="font-size:small; color:black;">일반회원</span>
+					</a>
+					<span style="color:black; margin-left:10px; margin-right:10px;">│</span>
+					<a href="#" id="admin_text">
+						<span style="font-size:small; color:black;">관리자</span>
+					</a>
 				</div>
 			</div>
 		</div>
-	</div>
-</form>
+	</form>
+</div>
 
 <script>
 $(function(){
+	$('#login_id').focus();
 	// LoginForm
 	$('#login_btn').click(function(){
 		var id = $('#login_id').val();
@@ -60,7 +73,7 @@ $(function(){
 		}
 	});
 	
-	$('#find_member').click(function(){
+	$('#find_member_id').click(function(){
 		$('#login_modal_body').empty();
 		$('#login_modal_footer').remove();
 		$('#loginModalLabel').text('아이디 찾기');

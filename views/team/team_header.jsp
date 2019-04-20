@@ -10,10 +10,10 @@
 			<a href="#" data-toggle="dropdown" data-target="#" id="drop_team" aria-haspopup="true" aria-expanded="false">나의 소속팀</a>
 			<div class="dropdown-menu"  aria-labelledby="drop_team" >
 				<a class="dropdown-item" href="myteam.do?menu=1">내 정보</a>
+				<div class="dropdown-divider"></div>
 				<a class="dropdown-item" href="myteam.do?menu=2">팀 정보</a>
-				<a class="dropdown-item" href="myteam.do?menu=3">팀 선수목록</a>
-				<a class="dropdown-item" href="myteam.do?menu=4">팀 기록실</a>
-				<a class="dropdown-item" href="myteam.do?menu=5">팀 게시판</a>
+				<a class="dropdown-item" href="myteam.do?menu=3">팀 기록실</a>
+				<a class="dropdown-item" href="myteam.do?menu=4">팀 게시판</a>
 				<div class="dropdown-divider"></div>
 				<span class="dropdown-item disabled">팀 관리자 메뉴</span>
 				<a class="dropdown-item" href="#">팀 정보수정</a>

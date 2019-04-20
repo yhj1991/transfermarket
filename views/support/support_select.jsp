@@ -97,7 +97,9 @@
 		<tbody id="comment_tbody">
 			<c:if test="${empty comment}">
 				<tr>
-					<td colspan="2" style="border:none; border-top:none; padding-left:15px; padding-bottom:10px">등록된 댓글이 없습니다. 댓글을 등록해보세요.</td>
+					<td colspan="2" style="border:none; border-top:none; padding-left:15px; padding-bottom:10px">
+						등록된 댓글이 없습니다. 댓글을 등록해보세요.
+					</td>
 				</tr>
 			</c:if>
 			<c:if test="${!empty comment}">
@@ -154,8 +156,8 @@
 			<sec:authorize access="isAnonymous()">
 			<tr>
 				<td>
-					<textarea class="form-control" style="height:50px; resize:none;" id="comment_text1" name="comment" placeholder="댓글을 입력하세요" readonly>
-					</textarea>
+					<textarea class="form-control" style="height:50px; resize:none; background-color:white;" id="comment_text1" name="comment" 
+								readonly>댓글을 입력하세요</textarea>
 				</td>
 				<td style="width:10%; text-align:center; vertical-align:middle;"></td>
 			</tr>
@@ -182,7 +184,7 @@ $(function(){
 	$('#comment_text1').click(function(){
 		var yes = confirm('로그인이 필요한 기능입니다. 로그인하시겠습니까?');
 		if(yes){
-			$('#loginModal').modal('show');
+			window.location.href='${pageContext.request.contextPath}/login.do';
 		}
 		else{
 			return false;
@@ -216,7 +218,8 @@ $(function(){
 			'<tr>'+
 				'<td colspan="2" style="padding-right:0px">'+
 					'<div class="form-inline">'+
-						'<textarea class="form-control" style="width:90%; height:50px; resize:none;" id="recomment_text" name="recomment" placeholder="답댓글을 입력하세요"></textarea>'+
+						'<textarea class="form-control" style="width:90%; height:50px; resize:none;" id="recomment_text" name="recomment" '+
+						'placeholder="답댓글을 입력하세요"></textarea>'+
 						'<input type="button" class="btn btn-outline-light btn-sm" style="margin-left:10px;" id="recomment_insert_btn" value="등록" />'+
 						'<input type="button" class="btn btn-outline-light btn-sm" style="margin-left:5px;" id="recomment_close_btn" value="취소" />'+
 					'</div>'+
@@ -258,7 +261,8 @@ $(function(){
 		$('#comment_tr_' + comno).append(
 			'<td colspan="2" style="padding-right:0px">'+
 				'<div class="form-inline">'+
-					'<textarea class="form-control" style="width:90%; height:50px; resize:none;" id="comment_text" placeholder="댓글을 입력하세요">' + text + '</textarea>'+
+					'<textarea class="form-control" style="width:90%; height:50px; resize:none;" id="comment_text" placeholder="댓글을 입력하세요">'+
+					text + '</textarea>'+
 					'<input type="button" class="btn btn-outline-light btn-sm" style="margin-left:10px;" id="comment_update_btn" value="수정" />'+
 					'<input type="button" class="btn btn-outline-light btn-sm" style="margin-left:5px;" id="comment_close_btn" value="취소" />'+
 				'</div>'+

@@ -19,7 +19,7 @@
 <div class="container" style="padding:0px">
 	<table class="table table-dark table-bordered">
 			<tr>
-				<c:forEach var="category" items="${category}">
+				<c:forEach var="category" items="${main.category}">
 					<td align="center">
 						<a href="${pageContext.request.contextPath}/detail/continent.do?no=${category.continent_no}">
 							<img src="${pageContext.request.contextPath}/img/continent_img.do?no=${category.continent_no}" style="width:65px; height:65px" alt="${category.continent_name}" />
@@ -28,7 +28,7 @@
 				</c:forEach>
 			</tr>
 			<tr>
-				<c:forEach var="category" items="${category}">
+				<c:forEach var="category" items="${main.category}">
 					<td align="center" class="${category.continent_no == param.no ? 'continent_active' : ''}">
 						<div style="margin-top:3px">
 							<a href="${pageContext.request.contextPath}/detail/continent.do?no=${category.continent_no}">
@@ -64,7 +64,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					<c:forEach var="goal" items="${player.goal}">
+					<c:forEach var="goal" items="${main.player.goal}">
 						<tr style="height:48px">
 							<td style="text-align:center;">
 								<table class="table table-dark table-sm table-borderless" style="margin:auto;">
@@ -113,7 +113,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					<c:forEach var="assist" items="${player.assist}">
+					<c:forEach var="assist" items="${main.player.assist}">
 						<tr style="height:48px">
 							<td style="text-align:center;">
 								<table class="table table-dark table-sm table-borderless" style="margin:auto;">
@@ -161,7 +161,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					<c:forEach var="mv" items="${player.mv}">
+					<c:forEach var="mv" items="${main.player.mv}">
 						<tr style="height:48px">
 							<td style="text-align:center;">
 								<table class="table table-dark table-sm table-borderless" style="margin:auto;">
@@ -224,7 +224,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					<c:forEach var="s_greece" items="${schedule_greece}">
+					<c:forEach var="s_greece" items="${main.schedule_greece}">
 						<tr style="height:40px">
 							<td style="text-align:center;">${s_greece.match_date}</td>
 							<td style="text-align:center;">
@@ -260,7 +260,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					<c:forEach var="hit" items="${player.hit}">
+					<c:forEach var="hit" items="${main.player.hit}">
 						<tr>
 							<td>
 								<table class="table table-dark table-sm table-borderless" style="margin:auto;">
@@ -331,7 +331,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					<c:forEach var="s_epl" items="${schedule_epl}">
+					<c:forEach var="s_epl" items="${main.schedule_epl}">
 						<tr style="height:40px">
 							<td style="text-align:center;">${s_epl.match_date}</td>
 							<td style="text-align:center;">
@@ -384,7 +384,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					<c:forEach var="epl" items="${epl}" varStatus="idx">
+					<c:forEach var="epl" items="${main.epl}" varStatus="idx">
 						<tr style="height:40px">
 							<td style="text-align:center; font-size:small;">${idx.count}</td>
 							<td>
@@ -434,7 +434,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					<c:forEach var="s_laliga" items="${schedule_laliga}">
+					<c:forEach var="s_laliga" items="${main.schedule_laliga}">
 						<tr style="height:40px">
 							<td style="text-align:center;">${s_laliga.match_date}</td>
 							<td style="text-align:center;">
@@ -484,7 +484,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					<c:forEach var="laliga" items="${laliga}" varStatus="idx">
+					<c:forEach var="laliga" items="${main.laliga}" varStatus="idx">
 						<tr style="height:40px">
 							<td style="text-align:center; font-size:small;">${idx.count}</td>
 							<td>
@@ -534,7 +534,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					<c:forEach var="s_seria" items="${schedule_seria}">
+					<c:forEach var="s_seria" items="${main.schedule_seria}">
 						<tr style="height:40px">
 							<td style="text-align:center;">${s_seria.match_date}</td>
 							<td style="text-align:center;">
@@ -587,7 +587,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					<c:forEach var="seria" items="${seria}" varStatus="idx">
+					<c:forEach var="seria" items="${main.seria}" varStatus="idx">
 						<tr style="height:40px">
 							<td style="text-align:center; font-size:small;">${idx.count}</td>
 							<td>
@@ -640,7 +640,7 @@
 					</tr>
 				</thead>
 				<tbody id="champs_match_tbody">
-					<c:forEach var="champs" items="${schedule_champs}">
+					<c:forEach var="champs" items="${main.schedule_champs}">
 						<tr style="height:40px">
 							<td style="text-align:center;">${champs.match_date}</td>
 							<td style="text-align:center;">
@@ -694,7 +694,7 @@
 					</tr>
 				</thead>
 				<tbody id="champs_clublist_tbody">
-					<c:forEach var="champs" items="${champs}" varStatus="idx">
+					<c:forEach var="champs" items="${main.champs}" varStatus="idx">
 						<tr style="height:40px">
 							<td style="text-align:center; font-size:small;">${idx.count}</td>
 							<td>

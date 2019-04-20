@@ -3,10 +3,7 @@
 <%@ taglib uri="http://www.springframework.org/security/tags" prefix="sec" %>
 <%@ page session="false" %>
 
-
 <jsp:include page="team_header.jsp"></jsp:include>
-
-<div style="height:30px"></div>
 
 <style>
 .table tr th {
@@ -18,168 +15,217 @@
 </style>
 
 <div class="container">
-	<div class="row">
-		<div class="col">	
-			<table class="table table-dark table-sm">
-				<thead>
-					<tr>
-						<th colspan="3" style="text-align:center; font-size:large;">팀 내 최다득점자</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td style="width:30%">
-							<a href="${pageContext.request.contextPath}/detail/player.do?no=${info.mogoal.player_no}"> 
-								<img src="${pageContext.request.contextPath}/img/player_img.do?no=${info.mogoal.player_no}" />
-							</a>
-						</td>
-						<td colspan="2" style="width:70%">
-							<table class="table table-dark table-sm table-borderless" style="margin:auto;">
-								<tr>
-									<td>
-										<span class="small_span">선수명 : </span>
-										<span style="font-size:large; font-weight:bold;">
-											<a href="${pageContext.request.contextPath}/detail/player.do?no=${info.mogoal.player_no}" style="color:white;">${info.mogoal.player_name}</a>
-										</span>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<span class="small_span">국적 : </span>
-										<img src="${pageContext.request.contextPath}/img/country_img.do?no=${info.mogoal.country_no}" style="width:24px; height:16px;"/>
-										<span style="margin-left:5px; font-size:small;">${info.mogoal.country_name}</span>
-									</td>
-								</tr>
-								<tr>
-									<td><span class="small_span">나이 : </span>${info.mogoal.player_age}</td>
-								</tr>
-								<tr>
-									<td><span class="small_span">포지션 : </span><span style="font-size:small;">${info.mogoal.player_position1} - ${info.mogoal.player_position2}</span></td>
-								</tr>
-							</table>
-						</td>
-					</tr>
-					<tr>
-						<td style="text-align:center; width:30%">경기수</td>
-						<td style="text-align:center; width:35%">득점</td>
-						<td style="text-align:center; width:35%">도움</td>
-					</tr>
-					<tr>
-						<td style="text-align:center;">${info.mogoal.attempts}</td>
-						<td style="text-align:center;">${info.mogoal.goal}</td>
-						<td style="text-align:center;">${info.mogoal.assist}</td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
-			
-		<div style="height:6px"></div>
-			
-		<div class="col">
-			<table class="table table-dark table-sm">
-				<thead>
-					<tr>
-						<th colspan="3" style="text-align:center; font-size:large;">팀 내 최다도움</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td style="width:30%">
-							<a href="${pageContext.request.contextPath}/detail/player.do?no=${info.moassist.player_no}">
-								<img src="${pageContext.request.contextPath}/img/player_img.do?no=${info.moassist.player_no}" />
-							</a>
-						</td>
-						<td colspan="2" style="width:70%">
-							<table class="table table-dark table-sm table-borderless" style="margin:auto;">
-								<tr>
-									<td>
-										<span class="small_span">선수명 : </span>
-										<span style="font-size:large; font-weight:bold;">
-											<a href="${pageContext.request.contextPath}/detail/player.do?no=${info.moassist.player_no}" style="color:white;">${info.moassist.player_name}</a>
-										</span>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<span class="small_span">국적 : </span>
-										<img src="${pageContext.request.contextPath}/img/country_img.do?no=${info.moassist.country_no}" style="width:24px; height:16px;"/>
-										<span style="margin-left:5px; font-size:small;">${info.moassist.country_name}</span>
-									</td>
-								</tr>
-								<tr>
-									<td><span class="small_span">나이 : </span>${info.moassist.player_age}</td>
-								</tr>
-								<tr>
-									<td><span class="small_span">포지션 : </span><span style="font-size:small;">${info.moassist.player_position1} - ${info.moassist.player_position2}</span></td>
-								</tr>
-							</table>
-						</td>
-					</tr>
-					<tr>
-						<td style="text-align:center; width:30%">경기수</td>
-						<td style="text-align:center; width:35%">득점</td>
-						<td style="text-align:center; width:35%">도움</td>
-					</tr>
-					<tr>
-						<td style="text-align:center;">${info.moassist.attempts}</td>
-						<td style="text-align:center;">${info.moassist.goal}</td>
-						<td style="text-align:center;">${info.moassist.assist}</td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
-	</div>
-	
-	<table class="table table-dark table-sm" style="margin-top:10px">
-		<tr>
-			<td colspan="7" style="text-align:center;"><img src="${pageContext.request.contextPath}/img/club_img.do?no=${club.club_no}" style="width:18px; height:24px;"/> 공격포인트 순위</td>
-		</tr>
-		<tr>
-			<td style="text-align:center; width:10%">순위</td>
-			<td style="text-align:center; width:35%">선수</td>
-			<td style="width:15%">국적</td>
-			<td style="text-align:center; width:10%">경기수</td>
-			<td style="text-align:center; width:10%">득점</td>
-			<td style="text-align:center; width:10%">도움</td>
-			<td style="text-align:center; width:10%">공격포인트</td>
-		</tr>
-		<c:forEach var="point" items="${info.pointlist}" varStatus="count">
+	<table class="table table-borderd table-dark">
+		<thead>
 			<tr>
-				<td style="text-align:center; vertical-align:middle;">${count.count}</td>
-				<td>
-					<table class="table table-dark table-sm table-borderless" style="margin:auto;">
-						<tr>
-							<td rowspan="2" style="width:40px">
-								<a href="${pageContext.request.contextPath}/detail/player.do?no=${point.player_no}">
-									<img src="${pageContext.request.contextPath}/img/player_img.do?no=${point.player_no}" style="width:40px; height:40px"/>
-								</a>
-							</td>
-							<td style="font-size:small;">
-								<a href="${pageContext.request.contextPath}/detail/player.do?no=${point.player_no}" style="color:white;">${point.player_name}</a>
-							</td>
-						</tr>
-						<tr>
-							<td style="font-size:small;">${point.player_position1} - ${point.player_position2}</td>
-						</tr>
-					</table>
-				</td>
-				<td style="vertical-align:middle;">
-					<img src="${pageContext.request.contextPath}/img/country_img.do?no=${point.country_no}" style="width:24px; height:16px;" />
-					<span style="margin-left:5px; font-size:small;">${point.country_name}</span>
-				</td>
-				<td style="text-align:center; vertical-align:middle;">${point.attempts}</td>
-				<td style="text-align:center; vertical-align:middle;">${point.goal}</td>
-				<td style="text-align:center; vertical-align:middle;">${point.assist}</td>
-				<td style="text-align:center; vertical-align:middle;">${point.point}</td>
+				<th colspan="6" style="text-align:center;"><h4 align="center">게시판</h4></th>
 			</tr>
-		</c:forEach>
+			<tr>
+				<th colspan="6">
+					<div class="form-inline">
+						<sec:authorize access="isAnonymous()">
+							<a href="insert.do" id="insert_support_login" class="btn btn-outline-light btn-sm">글쓰기</a>
+						</sec:authorize>
+						<sec:authorize access="isAuthenticated()">
+							<a href="insert.do" class="btn btn-outline-light btn-sm">글쓰기</a>
+							<div style="width:20px"></div>
+							<input type="button" class="btn btn-outline-light btn-sm" id="my_support" value="내가 쓴 글" />
+							<div style="width:20px"></div>
+							<a href="main.do" class="btn btn-outline-light btn-sm form-control form-control-sm">검색 초기화</a>
+						</sec:authorize>
+					</div>
+				</th>
+			</tr>
+			<tr>
+				<th colspan="6">
+					<div class="form-inline">
+						<select id="search_category" name="category" class='form-control form-control-sm'>
+							<option value="0">카테고리</option>
+							<c:forEach var="category" items="${category}">
+								<option value="${category.category_no}">${category.category_name}</option>
+							</c:forEach>
+						</select>
+						<div style="width:10px"></div>
+						<select id="search_type" name="type" class='form-control form-control-sm'>
+							<option value="support_title">제목</option>
+							<option value="support_content">내용</option>
+							<option value="support_t_c">제목+내용</option>
+							<option value="support_writer">작성자</option>
+						</select>
+						<div style="width:10px"></div>
+							<input type="text" id="search_text" name="text" class="form-control form-control-sm" style="width:250px"/>
+						<div style="width:10px"></div>
+						<input type="button" id="search_btn" class="btn btn-outline-light btn-sm form-control form-control-sm" value="검색" />
+					</div>
+				</th>
+			</tr>
+			<tr>
+				<th style="text-align:center; width:5%">번호</th>
+				<th style="text-align:center; width:15%">카테고리</th>
+				<th style="text-align:center;">제목</th>
+				<th style="text-align:center; width:20%">작성자</th>
+				<th style="text-align:center; width:20%">등록일</th>
+				<th style="text-align:center; width:10%">조회수</th>
+			</tr>	
+		</thead>
+		<tbody id="search_support_tbody"></tbody>
 	</table>
+	
+	<div class="row justify-content-center" id="pagination-div">
+		<ul id="pagination" class="pagination-sm"></ul>
+	</div>
 </div>
 
+<script src="${pageContext.request.contextPath}/resources/twbsPagination/jquery.twbsPagination.min.js"></script>
 <script>
 $(function(){
-			
+	
+	$('#pagination').twbsPagination({
+		totalPages: '${totpage}',
+		visiblePages: '${totpage < 5 ? totpage : 5}',
+		next: '>',
+		prev: '<',
+		onPageClick: function (event, page) {
+			$.post('rest_supportlist_page.json', {page : page}, function(data){
+				$('#search_support_tbody').empty();
+				var len = data.supportList.length;
+				if(len == 0){
+					$('#search_support_tbody').append(
+						'<tr>'+
+							'<td colspan="6" style="font-size:large; font-weight:bold; text-align:center;">등록된 게시글이 없습니다.</td>'+
+						'</tr>'
+					);
+				}
+				else{
+					for(var i = 0; i < len; i++){
+						$('#search_support_tbody').append(
+								'<tr>'+
+									'<td style="text-align:center;">' + data.supportList[i].support_no + '</td>'+
+									'<td style="text-align:center;">' + data.supportList[i].category_name + '</td>'+
+									'<td>'+
+										'<a href="${pageContext.request.contextPath}/support/select.do?no=' + data.supportList[i].support_no + '">'+
+											'<span style="margin-left:30px">' + data.supportList[i].support_title + '</span>'+
+										'</a>'+
+									'</td>'+
+									'<td style="text-align:center;">' + data.supportList[i].support_writer + '</td>'+
+									'<td style="text-align:center;">' + data.supportList[i].support_date + '</td>'+
+									'<td style="text-align:center;">' + data.supportList[i].support_hit + '</td>'+
+								'</tr>'		
+						);
+					}
+				}
+			});
+		}
+	});
+	
+	$('#insert_support_login').click(function(){
+		event.preventDefault();
+		var yes = confirm('로그인된 회원만 글쓰기를 할 수 있습니다. 로그인하시겠습니까?');
+		if(yes){
+			$('#loginModal').modal('show');
+		}
+	});
+	
+	$('#my_support').click(function(){
+		$.post('rest_mysupport.json', function(data){
+			var len = data.mysupport.searchList.length;
+			if(len == 0){
+				alert('내가 쓴 게시글이 없습니다.');
+				return false;
+			}
+			else {
+				$('#pagination').twbsPagination('destroy');
+				$('#pagination').twbsPagination({
+			       	totalPages: data.mysupport.searchPage,
+			   		visiblePages: data.mysupport.searchPage < 5 ? data.mysupport.searchPage : 5,
+			   		next: '>',
+			   		prev: '<',
+			   		onPageClick: function (event, page) {
+			   			$.post('rest_mysupport.json', {page : page}, function(data){
+			   				$('#search_support_tbody').empty();
+			   				var len2 = data.mysupport.searchList.length;
+							for(var i = 0; i < len2; i++){
+								$('#search_support_tbody').append(
+									'<tr>'+
+										'<td style="text-align:center;">' + data.mysupport.searchList[i].support_no + '</td>'+
+										'<td style="text-align:center;">' + data.mysupport.searchList[i].category_name + '</td>'+
+										'<td>'+
+											'<a href="${pageContext.request.contextPath}/support/select.do?no=' + data.mysupport.searchList[i].support_no + '">'+
+												'<span style="margin-left:30px">' + data.mysupport.searchList[i].support_title + '</span>'+
+											'</a>'+
+										'</td>'+
+										'<td style="text-align:center;">' + data.mysupport.searchList[i].support_writer + '</td>'+
+										'<td style="text-align:center;">' + data.mysupport.searchList[i].support_date + '</td>'+
+										'<td style="text-align:center;">' + data.mysupport.searchList[i].support_hit + '</td>'+
+									'</tr>'
+								);
+							}
+			   			},'json');
+			   		}
+				});
+			}
+		},'json');
+	});
+	
+	$('#search_btn').click(function(){
+		var category = $('#search_category').val();
+		var type = $('#search_type').val();
+		var text = $('#search_text').val();
+		$.post('rest_search_support.json', {category : category, type : type, text : text}, function(data){
+			var len = data.search.searchList.length;
+			if(len == 0){
+				alert('검색된 게시글이 없습니다.');
+				return false;
+			}
+			else{
+				$('#search_support_tbody').empty();
+				for(var i = 0; i < len; i++){
+					$('#search_support_tbody').append(
+							'<tr>'+
+								'<td style="text-align:center;">' + data.search.searchList[i].support_no + '</td>'+
+								'<td style="text-align:center;">' + data.search.searchList[i].category_name + '</td>'+
+								'<td>'+
+									'<a href="${pageContext.request.contextPath}/support/select.do?no=' + data.search.searchList[i].support_no + '">'+
+										'<span style="margin-left:30px">' + data.search.searchList[i].support_title + '</span>'+
+									'</a>'+
+								'</td>'+
+								'<td style="text-align:center;">' + data.search.searchList[i].support_writer + '</td>'+
+								'<td style="text-align:center;">' + data.search.searchList[i].support_date + '</td>'+
+								'<td style="text-align:center;">' + data.search.searchList[i].support_hit + '</td>'+
+							'</tr>'		
+					);
+				}
+				$('#pagination').twbsPagination('destroy');
+		        $('#pagination').twbsPagination({
+			       	totalPages: data.search.searchPage,
+			   		visiblePages: data.search.searchPage < 5 ? data.search.searchPage : 5,
+			   		next: '>',
+			   		prev: '<',
+			   		onPageClick: function (event, page) {
+			   			$.post('rest_search_support.json', {category : category, type : type, text : text, page: page}, function(data){
+			   				$('#search_support_tbody').empty();
+			   				var len = data.search.searchList.length;
+							for(var i = 0; i < len; i++){
+								$('#search_support_tbody').append(
+										'<tr>'+
+											'<td style="text-align:center;">' + data.search.searchList[i].support_no + '</td>'+
+											'<td style="text-align:center;">' + data.search.searchList[i].category_name + '</td>'+
+											'<td>'+
+												'<a href="${pageContext.request.contextPath}/support/select.do?no=' + data.search.searchList[i].support_no + '">'+
+													'<span style="margin-left:30px">' + data.search.searchList[i].support_title + '</span>'+
+												'</a>'+
+											'</td>'+
+											'<td style="text-align:center;">' + data.search.searchList[i].support_writer + '</td>'+
+											'<td style="text-align:center;">' + data.search.searchList[i].support_date + '</td>'+
+											'<td style="text-align:center;">' + data.search.searchList[i].support_hit + '</td>'+
+										'</tr>'		
+								);
+							}
+			   			});
+			   		}
+				});
+			}
+		});
+	});
 });
 </script>
-
-<jsp:include page="../footer.jsp"></jsp:include>

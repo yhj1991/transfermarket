@@ -31,29 +31,47 @@ public class TmTeamController {
 	public String myTeam(Authentication auth, Model model,
 			@RequestParam(value = "menu", defaultValue="1") int menu) {
 		
+		String msg = "";
+		String url = "";
+		Map<String, Object> getMap = new HashMap<String, Object>(); 
+				
 		if(menu == 1) {
-			TmUserVO vo = (TmUserVO)auth.getPrincipal();
-			Map<String, Object> sendMap = new HashMap<String, Object>();
-			sendMap.put("id", vo.getUsername());
-			model.addAttribute("member", teamDAO.selectMemberOne(sendMap));
+			if(auth != null) {
+				TmUserVO vo = (TmUserVO)auth.getPrincipal();
+				Map<String, Object> sendMap = new HashMap<String, Object>();
+				sendMap.put("id", vo.getUsername());
+				getMap = teamDAO.selectMemberOne(sendMap);
+				if(!getMap.isEmpty()) {
+					model.addAttribute("member", getMap);
+				}
+				else {
+					
+				}
+			}
 		}
 		else if(menu == 2) {
-			TmUserVO vo = (TmUserVO)auth.getPrincipal();
-			Map<String, Object> sendMap = new HashMap<String, Object>();
-			sendMap.put("id", vo.getUsername());
-			model.addAttribute("team", teamDAO.selectMyTeam(sendMap));
+			if(auth != null) {
+				TmUserVO vo = (TmUserVO)auth.getPrincipal();
+				Map<String, Object> sendMap = new HashMap<String, Object>();
+				sendMap.put("id", vo.getUsername());
+				getMap = teamDAO.selectMyTeam(sendMap);
+				if(getMap != null) {
+					model.addAttribute("team", getMap);
+				}
+				else {
+					msg = "소속된 팀이 없습니다. 팀에 가입을 해주세요.";
+					url = "main.do";
+					model.addAttribute("msg", msg);
+					model.addAttribute("url", url);
+					return "alert";
+				}
+			}
 			
 		}
 		else if(menu == 3) {
-			TmUserVO vo = (TmUserVO)auth.getPrincipal();
-			Map<String, Object> sendMap = new HashMap<String, Object>();
-			sendMap.put("id", vo.getUsername());
-			model.addAttribute("team", teamDAO.selectMyTeam(sendMap));
-		}
-		else if(menu == 4) {
 			
 		}
-		else if(menu == 5) {
+		else if(menu == 4) {
 			
 		}
 		else {

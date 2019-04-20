@@ -38,12 +38,7 @@ public class TmMainDAO {
 	
 	// 회원가입
 	public int insertMember(Map<String, Object> map) {
-		if(map.get("jointype").toString().equals("1")) {
-			return sqlSession.insert("tm_main.insert_member", map);
-		}
-		else {
-			return sqlSession.insert("tm_main.insert_member_other", map);
-		}
+		return sqlSession.insert("tm_main.insert_member", map);
 	}
 	
 	// 아이디 찾기
